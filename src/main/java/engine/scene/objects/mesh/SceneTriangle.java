@@ -48,12 +48,11 @@ public class SceneTriangle implements SceneObject {
         r = Math.min(1, r);
         g = Math.min(1, g);
         b = Math.min(1, b);
+        viewport.g2d.setColor(new Color(r, g, b));
 
         if (Settings.drawWireframes) {
-            viewport.g2d.setColor(Color.LIGHT_GRAY);
             viewport.g2d.drawPolygon(poly);
         } else {
-            viewport.g2d.setColor(new Color(r, g, b));
             viewport.g2d.fillPolygon(poly);
         }
     }
