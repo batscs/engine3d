@@ -6,6 +6,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,7 +17,7 @@ public class Renderer extends Canvas implements Runnable {
     private final JFrame window;
 
     private final List<Triangle> mesh;
-    private final Vector3 lighting;
+    private final List<Vector3> lighting;
     private final Camera camera;
     private final Set<Integer> keys = new HashSet<>();
 
@@ -27,7 +28,9 @@ public class Renderer extends Canvas implements Runnable {
         window = new JFrame("Java Software Renderer");
 
         mesh = Triangle.makeCube(0, 0, 5, 1);
-        lighting = new Vector3(0, 0, 1);
+        lighting = new ArrayList<>();
+        lighting.add(new Vector3(0, 0, 1));      // Above/behind camera
+        lighting.add(new Vector3(2, 2, 4));      // Overhead light
 
         camera = new Camera(new Vector3(0, 0, 0));
 
@@ -106,15 +109,47 @@ public class Renderer extends Canvas implements Runnable {
             if (tri.isBackFacing(camera)) {
                 continue;
             }
-
             Polygon poly = tri.getPolygon(mvp);
 
-            float angle = tri.angle(lighting);
-            float value = Math.max(0, -angle); // Ensures brightness doesn't go below 0
-            g2d.setColor(new Color(value, 0.5f, 0.5f));
+            float brightness = 0;
 
+            for (Vector3 light : lighting) {
+                float angle = tri.angle(light);  // negative dot product = facing light
+                float distance = tri.center().sub(light).length();
+
+                float attenuation = 1.0f / (1 + 0.2f * distance + 0.05f * distance * distance);
+                float lightContribution = Math.max(0, -angle) * attenuation;
+                brightness += lightContribution;
+            }
+
+            brightness = Math.min(1, brightness);  // Clamp to [0,1]
+
+            g2d.setColor(new Color(brightness, 0.5f * brightness, 0.5f * brightness));
             g2d.fillPolygon(poly);
         }
+
+        for (Vector3 light : lighting) {
+            // Use mvp to project the light position into normalized device coordinates (NDC)
+            Vector3 lightProj = mvp.transform(light);
+
+            // Convert from NDC to screen space
+            int x = (int) ((lightProj.x + 1) * 0.5f * width);
+            int y = (int) ((1 - (lightProj.y + 1) * 0.5f) * height);  // Y flipped for screen coordinates
+
+            // Use view transformation to get the distance in view space for scaling the light
+            Vector3 lightView = view.transform(light);
+            float distance = lightView.length();
+            int size = (int) (100f / distance);
+            size = Math.max(2, Math.min(size, 20));
+            System.out.println(size);
+
+            // Draw translucent yellow light
+            g2d.setColor(new Color(1f, 1f, 0f, 0.5f));
+            g2d.fillOval(x - size / 2, y - size / 2, size, size);
+            g2d.setColor(Color.BLACK);
+            g2d.drawOval(x - size / 2, y - size / 2, size, size);
+        }
+
     }
 
     @Override

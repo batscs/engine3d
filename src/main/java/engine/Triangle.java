@@ -48,6 +48,10 @@ public class Triangle {
         return normal.dot(camDirection);
     }
 
+    public Vector3 center() {
+        return v0.add(v1).add(v2).div(3);
+    }
+
     public Vector3 calculateNormal() {
         Vector3 edge1 = v1.sub(v0);
         Vector3 edge2 = v2.sub(v0);

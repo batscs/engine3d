@@ -40,4 +40,8 @@ public class Vector3 {
     public Vector3 mul(float s) {
         return new Vector3(x * s, y * s, z * s);
     }
+
+    public Vector3 div(float scalar) {
+        return new Vector3(x / scalar, y / scalar, z / scalar);
+    }
 }
