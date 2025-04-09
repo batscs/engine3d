@@ -21,13 +21,12 @@ import java.util.Set;
 
 public class Renderer extends Canvas implements Runnable {
     public static int width, height;
-    private final BufferedImage frame;
+    private BufferedImage frame;
     private final JFrame window;
-
     private final Camera camera;
     private final Set<Integer> keys = new HashSet<>();
     private final Set<Integer> releasedKeys = new HashSet<>();
-    private Scene scene;
+    private final Scene scene;
 
     private float deltaTime = 0f;
 
@@ -38,7 +37,9 @@ public class Renderer extends Canvas implements Runnable {
         frame = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         window = new JFrame("Java Engine 3D");
 
-        camera = new Camera(new Vector3(0, 0, 0));
+        camera = new Camera(new Vector3(2, 2, 0));
+        camera.yaw = -0.5f;
+        camera.pitch = -0.2f;
 
         addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) { keys.add(e.getKeyCode()); }
@@ -46,13 +47,29 @@ public class Renderer extends Canvas implements Runnable {
         });
 
         setFocusable(true);
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent e) {
+                int newWidth = getWidth();
+                int newHeight = getHeight();
+                if (newWidth > 0 && newHeight > 0) {
+                    Renderer.width = newWidth;
+                    Renderer.height = newHeight;
+                    frame.flush(); // Clean up old image
+                    frame.getGraphics().dispose();
+                }
+            }
+        });
     }
 
     public void start() {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setSize(width, height);
-        window.add(this);
+        window.setLayout(new BorderLayout());
+        window.add(this, BorderLayout.CENTER);
         window.setVisible(true);
+        window.pack();
+        window.setLocationRelativeTo(null);
         new Thread(this).start();
     }
 
@@ -118,15 +135,20 @@ public class Renderer extends Canvas implements Runnable {
     }
 
     private void render() {
+        if (frame.getWidth() != width || frame.getHeight() != height) {
+            frame.flush();
+            frame = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        }
+
+        Matrix4 projection = Matrix4.perspective(70, width / (float) height, 0.1f, 100f);
+        Matrix4 view = camera.getViewMatrix();
+        Matrix4 mvp = view.mul(projection);
+
         Graphics g = frame.getGraphics();
         Graphics2D g2d = (Graphics2D) g;
 
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, width, height);
-
-        Matrix4 projection = Matrix4.perspective(70, width / (float) height, 0.1f, 100f);
-        Matrix4 view = camera.getViewMatrix();
-        Matrix4 mvp = view.mul(projection);
 
         Viewport viewport = new Viewport(g2d, mvp, camera, scene.getLights());
 
@@ -134,13 +156,26 @@ public class Renderer extends Canvas implements Runnable {
             obj.draw(viewport);
         }
 
+        drawHud(g2d);
+    }
+
+    private void drawHud(Graphics2D g2d) {
         // Calculate and draw FPS
         int fps = (int)(1f / deltaTime);
-        g.setColor(Color.BLACK);
-        g.setFont(new Font("Arial", Font.PLAIN, 16));
-        g.drawString("FPS: " + fps, 10, 20);
-        g.drawString("Wireframes (F): " + Settings.drawWireframes, 10, 35);
-        g.drawString("Backfacing (B): " + Settings.allowBackFacing, 10, 50);
+        g2d.setColor(Color.BLACK);
+        g2d.setFont(new Font("Arial", Font.PLAIN, 16));
+        g2d.drawString("FPS: " + fps, 10, 20);
+        g2d.drawString("Wireframes (F): " + Settings.drawWireframes, 10, 35);
+        g2d.drawString("Backfacing (B): " + Settings.allowBackFacing, 10, 50);
+
+        int crosshairSize = 10;
+        int centerX = width / 2;
+        int centerY = height / 2;
+
+        g2d.setStroke(new BasicStroke(2));
+        g2d.setColor(Color.LIGHT_GRAY);
+        g2d.drawLine(centerX - crosshairSize, centerY, centerX + crosshairSize, centerY);
+        g2d.drawLine(centerX, centerY - crosshairSize, centerX, centerY + crosshairSize);
     }
 
     private void tick() {

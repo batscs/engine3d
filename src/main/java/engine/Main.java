@@ -19,7 +19,7 @@ public class Main {
         scene.add(new SceneLight(new Vector3(0, 3, 3), Color.RED, 2f));
         scene.add(new SceneLight(new Vector3(2, 0, 3), Color.BLUE, 1f));
 
-        Renderer renderer = new Renderer(scene, 800, 600);
+        Renderer renderer = new Renderer(scene, 700, 700);
         renderer.start();
     }
 }
