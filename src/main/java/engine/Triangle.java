@@ -1,5 +1,6 @@
 package engine;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,4 +36,43 @@ public class Triangle {
         }
         return tris;
     }
+
+    public boolean isBackFacing(Camera camera) {
+        return angle(camera.position) >= 0;
+    }
+
+    public float angle(Vector3 direction) {
+        Vector3 normal = calculateNormal();
+        Vector3 camDirection = v0.sub(direction).normalize();
+
+        return normal.dot(camDirection);
+    }
+
+    public Vector3 calculateNormal() {
+        Vector3 edge1 = v1.sub(v0);
+        Vector3 edge2 = v2.sub(v0);
+        return edge1.cross(edge2).normalize();
+    }
+
+    public Polygon getPolygon(Matrix4 viewport) {
+        Vector3 p0 = viewport.transform(v0);
+        Vector3 p1 = viewport.transform(v1);
+        Vector3 p2 = viewport.transform(v2);
+
+        // Convert from NDC (-1 to 1) to screen coordinates
+        int x0 = (int) ((p0.x + 1) * 0.5f * Renderer.width);  // Assuming Renderer.WIDTH exists
+        int y0 = (int) ((1 - p0.y) * 0.5f * Renderer.height);
+        int x1 = (int) ((p1.x + 1) * 0.5f * Renderer.width);
+        int y1 = (int) ((1 - p1.y) * 0.5f * Renderer.height);
+        int x2 = (int) ((p2.x + 1) * 0.5f * Renderer.width);
+        int y2 = (int) ((1 - p2.y) * 0.5f * Renderer.height);
+
+        Polygon poly = new Polygon();
+        poly.addPoint(x0, y0);
+        poly.addPoint(x1, y1);
+        poly.addPoint(x2, y2);
+
+        return poly;
+    }
+
 }
