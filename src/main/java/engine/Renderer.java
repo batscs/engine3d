@@ -28,6 +28,8 @@ public class Renderer extends Canvas implements Runnable {
     private final Set<Integer> keys = new HashSet<>();
     private Scene scene;
 
+    private float deltaTime = 0f;
+
     public Renderer(int width, int height) {
         Renderer.width = width;
         Renderer.height = height;
@@ -65,23 +67,34 @@ public class Renderer extends Canvas implements Runnable {
         createBufferStrategy(1);
         BufferStrategy bs = getBufferStrategy();
 
+        long lastLogicUpdate = System.nanoTime();
+        long lastRedraw = System.nanoTime();
+        long tickrate = 1000000000;
+
         while (true) {
+            long currentTime = System.nanoTime();
+            deltaTime = (currentTime - lastRedraw) / 1_000_000_000.0f; // Convert to seconds
+            lastRedraw = currentTime;
+
+            float difference = currentTime - lastLogicUpdate;
+            if (difference > tickrate) {
+                tick();
+                lastLogicUpdate = currentTime;
+            }
+
             updateInput();
-            tick();
-            render(); // still render into `frame`
+            render();
 
             // Now draw to screen
             Graphics g = bs.getDrawGraphics();
             g.drawImage(frame, 0, 0, null);
             g.dispose();
             bs.show();
-
-            try { Thread.sleep(16); } catch (InterruptedException ignored) {}
         }
     }
 
     private void updateInput() {
-        float speed = 0.05f;
+        float speed = deltaTime * 5;
 
         Vector3 forward = new Vector3(
                 (float) Math.sin(camera.yaw),
@@ -99,10 +112,10 @@ public class Renderer extends Canvas implements Runnable {
         if (keys.contains(KeyEvent.VK_SPACE)) camera.position = camera.position.sub(up.mul(speed));
         if (keys.contains(KeyEvent.VK_SHIFT)) camera.position = camera.position.add(up.mul(speed));
 
-        if (keys.contains(KeyEvent.VK_UP)) camera.pitch -= 0.015f;
-        if (keys.contains(KeyEvent.VK_DOWN)) camera.pitch += 0.015f;
-        if (keys.contains(KeyEvent.VK_LEFT)) camera.yaw -= 0.025f;
-        if (keys.contains(KeyEvent.VK_RIGHT)) camera.yaw += 0.025f;
+        if (keys.contains(KeyEvent.VK_UP)) camera.pitch -= 0.19f * speed;
+        if (keys.contains(KeyEvent.VK_DOWN)) camera.pitch += 0.19f * speed;
+        if (keys.contains(KeyEvent.VK_LEFT)) camera.yaw -= 0.19f * speed;
+        if (keys.contains(KeyEvent.VK_RIGHT)) camera.yaw += 0.19f * speed;
     }
 
     private void render() {
@@ -121,6 +134,12 @@ public class Renderer extends Canvas implements Runnable {
         for (SceneObject obj : scene.getAll()) {
             obj.draw(viewport);
         }
+
+        // Calculate and draw FPS
+        int fps = (int)(1f / deltaTime);
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.PLAIN, 16));
+        g.drawString("FPS: " + fps, 10, 20);
     }
 
     private void tick() {
