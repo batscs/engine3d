@@ -1,4 +1,4 @@
-package engine;
+package math;
 
 public class Matrix4 {
     float[][] m = new float[4][4];

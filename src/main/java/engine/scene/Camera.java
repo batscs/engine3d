@@ -1,4 +1,7 @@
-package engine;
+package engine.scene;
+
+import math.Matrix4;
+import math.Vector3;
 
 public class Camera {
     public Vector3 position;

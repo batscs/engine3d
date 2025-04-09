@@ -1,4 +1,4 @@
-package engine;
+package math;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

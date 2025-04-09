@@ -1,4 +1,7 @@
-package engine;
+package math;
+
+import engine.scene.Camera;
+import engine.Renderer;
 
 import java.awt.*;
 import java.util.ArrayList;
