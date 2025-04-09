@@ -1,5 +1,7 @@
 package engine.scene.objects;
 
+import engine.Settings;
+import lombok.Setter;
 import math.Triangle;
 import math.Vector3;
 import engine.scene.Viewport;
@@ -10,13 +12,18 @@ public class SceneTriangle implements SceneObject {
 
     private final Triangle tri;
 
+    @Setter
+    private boolean allowBackFacing = false;
+
     public SceneTriangle(Triangle tri) {
         this.tri = tri;
     }
 
     @Override
     public void draw(Viewport viewport) {
-        if (tri.isBackFacing(viewport.camera)) return;
+        if (!allowBackFacing
+                && !Settings.allowBackFacing
+                && tri.isBackFacing(viewport.camera)) return;
 
         Polygon poly = tri.getPolygon(viewport.perspective);
 
@@ -40,8 +47,13 @@ public class SceneTriangle implements SceneObject {
         g = Math.min(1, g);
         b = Math.min(1, b);
 
-        viewport.g2d.setColor(new Color(r, g, b));
-        viewport.g2d.fillPolygon(poly);
+        if (Settings.drawWireframes) {
+            viewport.g2d.setColor(Color.LIGHT_GRAY);
+            viewport.g2d.drawPolygon(poly);
+        } else {
+            viewport.g2d.setColor(new Color(r, g, b));
+            viewport.g2d.fillPolygon(poly);
+        }
     }
 
 

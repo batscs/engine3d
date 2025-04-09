@@ -17,6 +17,9 @@ public class ScenePlane implements SceneObject {
         // Create two triangles that form the plane
         this.triangle1 = new SceneTriangle(new Triangle(v1, v2, v3));
         this.triangle2 = new SceneTriangle(new Triangle(v1, v3, v4));
+
+        triangle1.setAllowBackFacing(true);
+        triangle2.setAllowBackFacing(true);
     }
 
     @Override

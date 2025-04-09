@@ -26,6 +26,7 @@ public class Renderer extends Canvas implements Runnable {
 
     private final Camera camera;
     private final Set<Integer> keys = new HashSet<>();
+    private final Set<Integer> releasedKeys = new HashSet<>();
     private Scene scene;
 
     private float deltaTime = 0f;
@@ -41,7 +42,7 @@ public class Renderer extends Canvas implements Runnable {
 
         addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) { keys.add(e.getKeyCode()); }
-            public void keyReleased(KeyEvent e) { keys.remove(e.getKeyCode()); }
+            public void keyReleased(KeyEvent e) { keys.remove(e.getKeyCode()); releasedKeys.add(e.getKeyCode()); }
         });
 
         setFocusable(true);
@@ -109,6 +110,11 @@ public class Renderer extends Canvas implements Runnable {
         if (keys.contains(KeyEvent.VK_DOWN)) camera.pitch -= 0.19f * speed;
         if (keys.contains(KeyEvent.VK_LEFT)) camera.yaw -= 0.19f * speed;
         if (keys.contains(KeyEvent.VK_RIGHT)) camera.yaw += 0.19f * speed;
+
+        if (releasedKeys.contains(KeyEvent.VK_F)) Settings.drawWireframes = !Settings.drawWireframes;
+        if (releasedKeys.contains(KeyEvent.VK_B)) Settings.allowBackFacing = !Settings.allowBackFacing;
+
+        releasedKeys.clear();
     }
 
     private void render() {
@@ -133,12 +139,12 @@ public class Renderer extends Canvas implements Runnable {
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.PLAIN, 16));
         g.drawString("FPS: " + fps, 10, 20);
+        g.drawString("Wireframes (F): " + Settings.drawWireframes, 10, 35);
+        g.drawString("Backfacing (B): " + Settings.allowBackFacing, 10, 50);
     }
 
     private void tick() {
-        for (SceneObject obj : scene.getAll()) {
-            obj.tick();
-        }
+        scene.getAll().forEach(SceneObject::tick);
     }
 
     @Override

@@ -13,14 +13,11 @@ public class Main {
     public static void main(String[] args) {
         Scene scene = new Scene();
 
-        //scene.add(new ScenePlane(-5, 1, -5, 20, 0, 20));
-
         scene.addAll(Triangle.makeCube(0, 0, 5, 2).stream()
                 .map(SceneTriangle::new).toList());
 
         scene.add(new SceneLight(new Vector3(0, 3, 3), Color.RED, 2f));
         scene.add(new SceneLight(new Vector3(2, 0, 3), Color.BLUE, 1f));
-
 
         Renderer renderer = new Renderer(scene, 800, 600);
         renderer.start();
