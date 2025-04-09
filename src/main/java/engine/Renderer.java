@@ -30,19 +30,12 @@ public class Renderer extends Canvas implements Runnable {
 
     private float deltaTime = 0f;
 
-    public Renderer(int width, int height) {
+    public Renderer(Scene scene, int width, int height) {
         Renderer.width = width;
         Renderer.height = height;
+        this.scene = scene;
         frame = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         window = new JFrame("Java Engine 3D");
-
-        scene = new Scene();
-
-        scene.addAll(Triangle.makeCube(0, 0, 5, 2).stream()
-                .map(SceneTriangle::new).toList());
-
-        scene.add(new SceneLight(new Vector3(0, -3, 3), Color.RED, 2f));
-        scene.add(new SceneLight(new Vector3(2, 0, 3), Color.BLUE, 1f));
 
         camera = new Camera(new Vector3(0, 0, 0));
 
@@ -109,11 +102,11 @@ public class Renderer extends Canvas implements Runnable {
         if (keys.contains(KeyEvent.VK_S)) camera.position = camera.position.sub(forward.mul(speed));
         if (keys.contains(KeyEvent.VK_A)) camera.position = camera.position.sub(right.mul(speed));
         if (keys.contains(KeyEvent.VK_D)) camera.position = camera.position.add(right.mul(speed));
-        if (keys.contains(KeyEvent.VK_SPACE)) camera.position = camera.position.sub(up.mul(speed));
-        if (keys.contains(KeyEvent.VK_SHIFT)) camera.position = camera.position.add(up.mul(speed));
+        if (keys.contains(KeyEvent.VK_SPACE)) camera.position = camera.position.add(up.mul(speed));
+        if (keys.contains(KeyEvent.VK_SHIFT)) camera.position = camera.position.sub(up.mul(speed));
 
-        if (keys.contains(KeyEvent.VK_UP)) camera.pitch -= 0.19f * speed;
-        if (keys.contains(KeyEvent.VK_DOWN)) camera.pitch += 0.19f * speed;
+        if (keys.contains(KeyEvent.VK_UP)) camera.pitch += 0.19f * speed;
+        if (keys.contains(KeyEvent.VK_DOWN)) camera.pitch -= 0.19f * speed;
         if (keys.contains(KeyEvent.VK_LEFT)) camera.yaw -= 0.19f * speed;
         if (keys.contains(KeyEvent.VK_RIGHT)) camera.yaw += 0.19f * speed;
     }

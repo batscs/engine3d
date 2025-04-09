@@ -17,7 +17,7 @@ public class Matrix4 {
     }
 
     public static Matrix4 lookAt(Vector3 eye, Vector3 target, Vector3 up) {
-        Vector3 z = eye.sub(target).normalize();
+        Vector3 z = target.sub(eye).normalize();
         Vector3 x = up.cross(z).normalize();
         Vector3 y = z.cross(x).normalize();
 
