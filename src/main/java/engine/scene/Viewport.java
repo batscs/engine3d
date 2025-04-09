@@ -1,7 +1,7 @@
 package engine.scene;
 
 import math.Matrix4;
-import engine.scene.objects.SceneLight;
+import engine.scene.objects.light.SceneLight;
 
 import java.awt.*;
 import java.util.List;

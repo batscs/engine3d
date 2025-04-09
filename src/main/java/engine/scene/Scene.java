@@ -1,6 +1,6 @@
 package engine.scene;
 
-import engine.scene.objects.SceneLight;
+import engine.scene.objects.light.SceneLight;
 import engine.scene.objects.SceneObject;
 
 import java.util.ArrayList;

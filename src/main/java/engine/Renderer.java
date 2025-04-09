@@ -3,12 +3,9 @@ package engine;
 import engine.scene.Camera;
 import engine.scene.Scene;
 import math.Matrix4;
-import math.Triangle;
 import math.Vector3;
 import engine.scene.Viewport;
-import engine.scene.objects.SceneLight;
 import engine.scene.objects.SceneObject;
-import engine.scene.objects.SceneTriangle;
 
 import javax.swing.*;
 import java.awt.*;
@@ -80,7 +77,7 @@ public class Renderer extends Canvas implements Runnable {
 
         long lastLogicUpdate = System.nanoTime();
         long lastRedraw = System.nanoTime();
-        long tickrate = 1000000000;
+        long tickrate = 1_000_000_000 / 32;
 
         while (true) {
             long currentTime = System.nanoTime();

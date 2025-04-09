@@ -1,6 +1,7 @@
-package engine.scene.objects;
+package engine.scene.objects.light;
 
 import engine.Renderer;
+import engine.scene.objects.SceneObject;
 import lombok.Getter;
 import math.Vector3;
 import engine.scene.Viewport;
@@ -10,9 +11,9 @@ import java.awt.*;
 public class SceneLight implements SceneObject {
 
     @Getter
-    private Color color;
+    Color color;
     @Getter
-    private float intensity;
+    float intensity;
     @Getter
     private Vector3 position;
 

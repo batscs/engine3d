@@ -1,6 +1,7 @@
-package engine.scene.objects;
+package engine.scene.objects.mesh;
 
 import engine.scene.Viewport;
+import engine.scene.objects.SceneObject;
 import math.Triangle;
 import math.Vector3;
 

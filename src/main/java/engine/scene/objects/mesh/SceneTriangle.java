@@ -1,6 +1,8 @@
-package engine.scene.objects;
+package engine.scene.objects.mesh;
 
 import engine.Settings;
+import engine.scene.objects.light.SceneLight;
+import engine.scene.objects.SceneObject;
 import lombok.Setter;
 import math.Triangle;
 import math.Vector3;
