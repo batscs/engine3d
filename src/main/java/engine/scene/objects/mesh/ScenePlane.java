@@ -34,4 +34,9 @@ public class ScenePlane implements SceneObject {
         triangle1.tick();
         triangle2.tick();
     }
+
+    @Override
+    public Vector3 getPosition() {
+        return triangle1.getPosition().cross(triangle2.getPosition());
+    }
 }

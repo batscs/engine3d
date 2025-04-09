@@ -120,10 +120,10 @@ public class Renderer extends Canvas implements Runnable {
         if (keys.contains(KeyEvent.VK_SPACE)) camera.position = camera.position.add(up.mul(speed));
         if (keys.contains(KeyEvent.VK_SHIFT)) camera.position = camera.position.sub(up.mul(speed));
 
-        if (keys.contains(KeyEvent.VK_UP)) camera.pitch += 0.19f * speed;
-        if (keys.contains(KeyEvent.VK_DOWN)) camera.pitch -= 0.19f * speed;
-        if (keys.contains(KeyEvent.VK_LEFT)) camera.yaw -= 0.19f * speed;
-        if (keys.contains(KeyEvent.VK_RIGHT)) camera.yaw += 0.19f * speed;
+        if (keys.contains(KeyEvent.VK_UP)) camera.pitch += 0.184f * speed;
+        if (keys.contains(KeyEvent.VK_DOWN)) camera.pitch -= 0.184f * speed;
+        if (keys.contains(KeyEvent.VK_LEFT)) camera.yaw -= 0.2f * speed;
+        if (keys.contains(KeyEvent.VK_RIGHT)) camera.yaw += 0.2f * speed;
 
         if (releasedKeys.contains(KeyEvent.VK_F)) Settings.drawWireframes = !Settings.drawWireframes;
         if (releasedKeys.contains(KeyEvent.VK_B)) Settings.allowBackFacing = !Settings.allowBackFacing;
@@ -144,12 +144,14 @@ public class Renderer extends Canvas implements Runnable {
         Graphics g = frame.getGraphics();
         Graphics2D g2d = (Graphics2D) g;
 
+        Viewport viewport = new Viewport(g2d, mvp, camera, scene.getLights());
+
+        // -------------
+
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, width, height);
 
-        Viewport viewport = new Viewport(g2d, mvp, camera, scene.getLights());
-
-        for (SceneObject obj : scene.getAll()) {
+        for (SceneObject obj : scene.getAllByDistance(camera.position)) {
             obj.draw(viewport);
         }
 

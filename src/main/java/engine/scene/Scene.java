@@ -2,6 +2,7 @@ package engine.scene;
 
 import engine.scene.objects.light.SceneLight;
 import engine.scene.objects.SceneObject;
+import math.Vector3;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,6 +34,17 @@ public class Scene {
         }
 
         return lights;
+    }
+
+    public List<SceneObject> getAllByDistance(Vector3 position) {
+        List<SceneObject> result = getAll();
+        result.sort((a, b) -> {
+            float distA = a.getPosition().sub(position).length();
+            float distB = b.getPosition().sub(position).length();
+            return Float.compare(distB, distA);
+        });
+
+        return result;
     }
 
     public List<SceneObject> getAll() {

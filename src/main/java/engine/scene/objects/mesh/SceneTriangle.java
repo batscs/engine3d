@@ -64,4 +64,9 @@ public class SceneTriangle implements SceneObject {
 
     }
 
+    @Override
+    public Vector3 getPosition() {
+        return tri.center();
+    }
+
 }
