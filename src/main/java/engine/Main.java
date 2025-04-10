@@ -1,34 +1,24 @@
 package engine;
 
+import assets.scene.io.OBJScene;
+import assets.scene.template.TestScene;
 import engine.controller.CameraController;
-import engine.controller.ObjectController;
-import engine.render.Camera;
-import engine.render.Renderer;
-import engine.scene.Scene;
-import engine.scene.objects.composite.SceneCube;
-import engine.scene.objects.SceneObject;
-import engine.scene.objects.light.SceneLight;
-import engine.scene.objects.light.SceneLightBulb;
-import engine.scene.objects.light.SceneLightFade;
-import math.Vector3;
+import util.PathUtility;
 
 public class Main {
     public static void main(String[] args) {
-        Scene scene = new Scene();
-        scene.add(new SceneLight(new Vector3(-2, 3, 3), java.awt.Color.RED, 2f));
-        scene.add(new SceneLightBulb(new Vector3(2, 0, 3), java.awt.Color.BLUE, 1.2f));
-        scene.add(new SceneLightFade(new Vector3(-2, -2, 7), java.awt.Color.GREEN, 1f));
-
-        SceneObject cube = new SceneCube(0, 0, 5, 2);
-        scene.add(cube);
-
         Engine engine = new Engine();
 
-        engine.setCamera(new Vector3(2, 2, 0), -0.5f, -0.2f);
         engine.registerController(new CameraController(engine.getCamera()));
-        engine.registerController(new ObjectController(cube));
 
-        engine.setScene(scene);
+        // TestScene.build(engine);
+
+        try {
+            String resourcePath = "/models/bear.obj"; // adjust to your structure
+            OBJScene.build(engine, PathUtility.getResourcePath(resourcePath));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         engine.start();
     }

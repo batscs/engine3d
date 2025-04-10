@@ -1,7 +1,7 @@
 package engine.scene.objects.light;
 
 import math.Vector3;
-import util.Utility;
+import util.MathUtility;
 import java.awt.Color;
 
 public class SceneLightBulb extends SceneLight {
@@ -28,10 +28,10 @@ public class SceneLightBulb extends SceneLight {
 
         if (Math.random() < 0.2) {
             // Flicker down to 30-70% intensity randomly
-            super.intensity = baseIntensity * Utility.randomFloat(0.5f, 0.7f);
+            super.intensity = baseIntensity * MathUtility.randomFloat(0.5f, 0.7f);
         } else {
             // Otherwise return to normal (with small fluctuations)
-            super.intensity = baseIntensity * Utility.randomFloat(0.8f, 1f);
+            super.intensity = baseIntensity * MathUtility.randomFloat(0.8f, 1f);
         }
     }
 }

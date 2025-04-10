@@ -117,10 +117,7 @@ public class Engine implements Runnable {
     }
 
     public void setCamera(Vector3 vector3, float yaw, float pitch) {
-        Camera camera = new Camera(vector3);
-        camera.yaw = yaw;
-        camera.pitch = pitch;
-        renderer.setCamera(camera);
+        renderer.setCamera(vector3, yaw, pitch);
     }
 
     public Camera getCamera() {

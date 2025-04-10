@@ -8,14 +8,10 @@ import lombok.Setter;
 import math.Matrix4;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.HashSet;
-import java.util.Set;
-import engine.controller.Controller;
 import math.Vector3;
 
 public class Renderer extends Canvas {
 
-    @Setter
     @Getter
     private Camera camera;
 
@@ -23,8 +19,9 @@ public class Renderer extends Canvas {
     private Scene scene;
 
     private static int width, height;
+    // Provide the current frame for drawing.
+    @Getter
     private BufferedImage frame;
-    private final Set<Controller> controllers = new HashSet<>();
 
     public Renderer(Scene scene, int width, int height) {
         Renderer.width = width;
@@ -38,9 +35,10 @@ public class Renderer extends Canvas {
     public static int getWidthStatic() { return width; }
     public static int getHeightStatic() { return height; }
 
-    // Provide the current frame for drawing.
-    public BufferedImage getFrame() {
-        return frame;
+    public void setCamera(Vector3 vector3, float yaw, float pitch) {
+        camera.position = vector3;
+        camera.yaw = yaw;
+        camera.pitch = pitch;
     }
 
     public void render() {
@@ -80,6 +78,9 @@ public class Renderer extends Canvas {
         g2d.drawString("FPS: " + (int) (1 / Settings.deltaTime), 10, 20);
         g2d.drawString("Wireframes (F): " + Settings.drawWireframes, 10, 35);
         g2d.drawString("Backfacing (B): " + Settings.allowBackFacing, 10, 50);
+
+        //String cam = String.format("(%f %f %f) y:%f p:%f", camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
+        //g2d.drawString("Camera: " + cam, 10, 65);
 
         // Draw crosshair.
         int crosshairSize = 10;
