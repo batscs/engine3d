@@ -11,4 +11,8 @@ public interface SceneObject {
 
     Vector3 getPosition();
 
+    default void move(Vector3 adjustment) {
+
+    }
+
 }

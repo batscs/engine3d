@@ -1,5 +1,6 @@
 package engine;
 
+import engine.controller.Controller;
 import engine.scene.Camera;
 import engine.scene.Scene;
 import math.Matrix4;
@@ -21,26 +22,24 @@ public class Renderer extends Canvas implements Runnable {
     private BufferedImage frame;
     private final JFrame window;
     private final Camera camera;
-    private final Set<Integer> keys = new HashSet<>();
+    private final Set<Integer> pressedKeys = new HashSet<>();
     private final Set<Integer> releasedKeys = new HashSet<>();
+    private final Set<Controller> controllers = new HashSet<>();
     private final Scene scene;
-
     private float deltaTime = 0f;
 
-    public Renderer(Scene scene, int width, int height) {
+    public Renderer(Camera camera, Scene scene, int width, int height) {
         Renderer.width = width;
         Renderer.height = height;
         this.scene = scene;
+        this.camera = camera;
         frame = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         window = new JFrame("Java Engine 3D");
 
-        camera = new Camera(new Vector3(2, 2, 0));
-        camera.yaw = -0.5f;
-        camera.pitch = -0.2f;
 
         addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) { keys.add(e.getKeyCode()); }
-            public void keyReleased(KeyEvent e) { keys.remove(e.getKeyCode()); releasedKeys.add(e.getKeyCode()); }
+            public void keyPressed(KeyEvent e) { pressedKeys.add(e.getKeyCode()); }
+            public void keyReleased(KeyEvent e) { pressedKeys.remove(e.getKeyCode()); releasedKeys.add(e.getKeyCode()); }
         });
 
         setFocusable(true);
@@ -57,6 +56,11 @@ public class Renderer extends Canvas implements Runnable {
                 }
             }
         });
+    }
+
+    public void registerController(Controller controller) {
+        controller.registerKeys(pressedKeys, releasedKeys);
+        controllers.add(controller);
     }
 
     public void start() {
@@ -102,31 +106,7 @@ public class Renderer extends Canvas implements Runnable {
     }
 
     private void updateInput() {
-        float speed = deltaTime * 5;
-
-        Vector3 forward = new Vector3(
-                (float) Math.sin(camera.yaw),
-                0,
-                (float) Math.cos(camera.yaw)
-        ).normalize();
-
-        Vector3 right = new Vector3(forward.z, 0, -forward.x);
-        Vector3 up = new Vector3(0, 1, 0);
-
-        if (keys.contains(KeyEvent.VK_W)) camera.position = camera.position.add(forward.mul(speed));
-        if (keys.contains(KeyEvent.VK_S)) camera.position = camera.position.sub(forward.mul(speed));
-        if (keys.contains(KeyEvent.VK_A)) camera.position = camera.position.sub(right.mul(speed));
-        if (keys.contains(KeyEvent.VK_D)) camera.position = camera.position.add(right.mul(speed));
-        if (keys.contains(KeyEvent.VK_SPACE)) camera.position = camera.position.add(up.mul(speed));
-        if (keys.contains(KeyEvent.VK_SHIFT)) camera.position = camera.position.sub(up.mul(speed));
-
-        if (keys.contains(KeyEvent.VK_UP)) camera.pitch += 0.184f * speed;
-        if (keys.contains(KeyEvent.VK_DOWN)) camera.pitch -= 0.184f * speed;
-        if (keys.contains(KeyEvent.VK_LEFT)) camera.yaw -= 0.2f * speed;
-        if (keys.contains(KeyEvent.VK_RIGHT)) camera.yaw += 0.2f * speed;
-
-        if (releasedKeys.contains(KeyEvent.VK_F)) Settings.drawWireframes = !Settings.drawWireframes;
-        if (releasedKeys.contains(KeyEvent.VK_B)) Settings.allowBackFacing = !Settings.allowBackFacing;
+        controllers.forEach(controller -> controller.update(deltaTime));
 
         releasedKeys.clear();
     }

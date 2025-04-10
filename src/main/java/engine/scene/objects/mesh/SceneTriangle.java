@@ -12,7 +12,7 @@ import java.awt.*;
 
 public class SceneTriangle implements SceneObject {
 
-    private final Triangle tri;
+    private Triangle tri;
 
     @Setter
     private boolean allowBackFacing = false;
@@ -66,6 +66,11 @@ public class SceneTriangle implements SceneObject {
     @Override
     public Vector3 getPosition() {
         return tri.center();
+    }
+
+    @Override
+    public void move(Vector3 adjustment) {
+        tri = tri.add(adjustment);
     }
 
 }

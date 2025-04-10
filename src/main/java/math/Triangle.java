@@ -44,6 +44,14 @@ public class Triangle {
         return angle(camera.position) >= 0;
     }
 
+    public Triangle add(Vector3 adjustment) {
+        return new Triangle(
+            v0.add(adjustment),
+            v1.add(adjustment),
+            v2.add(adjustment)
+        );
+    }
+
     public float angle(Vector3 direction) {
         Vector3 normal = calculateNormal();
         Vector3 camDirection = v0.sub(direction).normalize();
