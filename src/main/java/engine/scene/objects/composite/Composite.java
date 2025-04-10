@@ -21,7 +21,7 @@ public class Composite implements SceneObject {
 
     @Override
     public void draw(Viewport viewport) {
-        SceneUtil.sortByDistance(meshes.stream().toList(), viewport.camera.position).forEach(mesh -> mesh.draw(viewport));
+        SceneUtil.sortByDistance(meshes.stream().toList(), viewport.getCamera().position).forEach(mesh -> mesh.draw(viewport));
     }
 
     @Override

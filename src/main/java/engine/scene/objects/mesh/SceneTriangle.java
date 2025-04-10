@@ -25,13 +25,13 @@ public class SceneTriangle implements SceneObject {
     public void draw(Viewport viewport) {
         if (!allowBackFacing
                 && !Settings.allowBackFacing
-                && tri.isBackFacing(viewport.camera)) return;
+                && tri.isBackFacing(viewport.getCamera())) return;
 
         Polygon poly = tri.getPolygon(viewport);
 
         float r = 0, g = 0, b = 0;
 
-        for (SceneLight light : viewport.lights) {
+        for (SceneLight light : viewport.getScene().getLights()) {
             Vector3 lightPos = light.getPosition();
             float angle = tri.angle(lightPos);
             float distance = tri.center().sub(lightPos).length();
@@ -48,12 +48,12 @@ public class SceneTriangle implements SceneObject {
         r = Math.min(1, r);
         g = Math.min(1, g);
         b = Math.min(1, b);
-        viewport.g2d.setColor(new Color(r, g, b));
+        viewport.getG2d().setColor(new Color(r, g, b));
 
         if (Settings.drawWireframes) {
-            viewport.g2d.drawPolygon(poly);
+            viewport.getG2d().drawPolygon(poly);
         } else {
-            viewport.g2d.fillPolygon(poly);
+            viewport.getG2d().fillPolygon(poly);
         }
     }
 

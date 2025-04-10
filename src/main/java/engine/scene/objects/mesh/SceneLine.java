@@ -19,12 +19,12 @@ public class SceneLine implements SceneObject {
     @Override
     public void draw(Viewport viewport) {
         // Transform both points to screen space
-        Vector3 screenStart = viewport.perspective.transform(start);
-        Vector3 screenEnd = viewport.perspective.transform(end);
+        Vector3 screenStart = viewport.getPerspective().transform(start);
+        Vector3 screenEnd = viewport.getPerspective().transform(end);
 
         // Convert from NDC to viewport coordinates
-        int viewportWidth = viewport.width;
-        int viewportHeight = viewport.height;
+        int viewportWidth = viewport.getWidth();
+        int viewportHeight = viewport.getHeight();
 
         int x1 = (int) ((screenStart.x + 1) * viewportWidth / 2);
         int y1 = (int) ((1 - screenStart.y) * viewportHeight / 2);
@@ -32,8 +32,8 @@ public class SceneLine implements SceneObject {
         int y2 = (int) ((1 - screenEnd.y) * viewportHeight / 2);
 
         // Set the color and draw the line
-        viewport.g2d.setColor(color);
-        viewport.g2d.drawLine(x1, y1, x2, y2);
+        viewport.getG2d().setColor(color);
+        viewport.getG2d().drawLine(x1, y1, x2, y2);
     }
 
     @Override

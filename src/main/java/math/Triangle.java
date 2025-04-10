@@ -71,18 +71,18 @@ public class Triangle {
     }
 
     public Polygon getPolygon(Viewport viewport) {
-        Matrix4 perspective = viewport.perspective;
+        Matrix4 perspective = viewport.getPerspective();
         Vector3 p0 = perspective.transform(v0);
         Vector3 p1 = perspective.transform(v1);
         Vector3 p2 = perspective.transform(v2);
 
         // Convert from NDC (-1 to 1) to screen coordinates
-        int x0 = (int) ((p0.x + 1) * 0.5f * viewport.width);  // Assuming Renderer.WIDTH exists
-        int y0 = (int) ((1 - p0.y) * 0.5f * viewport.height);
-        int x1 = (int) ((p1.x + 1) * 0.5f * viewport.width);
-        int y1 = (int) ((1 - p1.y) * 0.5f * viewport.height);
-        int x2 = (int) ((p2.x + 1) * 0.5f * viewport.width);
-        int y2 = (int) ((1 - p2.y) * 0.5f * viewport.height);
+        int x0 = (int) ((p0.x + 1) * 0.5f * viewport.getWidth());  // Assuming Renderer.WIDTH exists
+        int y0 = (int) ((1 - p0.y) * 0.5f * viewport.getHeight());
+        int x1 = (int) ((p1.x + 1) * 0.5f * viewport.getWidth());
+        int y1 = (int) ((1 - p1.y) * 0.5f * viewport.getHeight());
+        int x2 = (int) ((p2.x + 1) * 0.5f * viewport.getWidth());
+        int y2 = (int) ((1 - p2.y) * 0.5f * viewport.getHeight());
 
         Polygon poly = new Polygon();
         poly.addPoint(x0, y0);

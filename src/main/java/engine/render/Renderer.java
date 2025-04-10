@@ -41,7 +41,7 @@ public class Renderer extends Canvas {
         Renderer.width = width;
         Renderer.height = height;
         this.scene = scene;
-        this.camera = new Camera(new Vector3(0, 0, 0));
+        this.camera = new Camera(new Vector3(0, 0, 0), width, height);
         frame = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     }
 
@@ -62,15 +62,11 @@ public class Renderer extends Canvas {
             frame = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         }
 
-        Matrix4 projection = Matrix4.perspective(70, width / (float) height, 0.1f, 100f);
-        Matrix4 view = camera.getViewMatrix();
-        Matrix4 mvp = view.mul(projection);
-
         Graphics g = frame.getGraphics();
         Graphics2D g2d = (Graphics2D) g;
 
         // Create a viewport to handle drawing the scene.
-        Viewport viewport = new Viewport(g2d, mvp, camera, scene.getLights(), width, height);
+        Viewport viewport = new Viewport(g2d, camera, scene);
 
         // Clear the background.
         g.setColor(Color.WHITE);
