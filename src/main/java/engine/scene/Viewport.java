@@ -13,10 +13,16 @@ public class Viewport {
     public final Camera camera;
     public final List<SceneLight> lights;
 
-    public Viewport(Graphics2D g2d, Matrix4 perspective, Camera camera, List<SceneLight> lights) {
+    public final int width;
+
+    public final int height;
+
+    public Viewport(Graphics2D g2d, Matrix4 perspective, Camera camera, List<SceneLight> lights, int width, int height) {
         this.g2d = g2d;
         this.perspective = perspective;
         this.camera = camera;
         this.lights = lights;
+        this.width = width;
+        this.height = height;
     }
 }

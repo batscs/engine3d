@@ -124,7 +124,7 @@ public class Renderer extends Canvas implements Runnable {
         Graphics g = frame.getGraphics();
         Graphics2D g2d = (Graphics2D) g;
 
-        Viewport viewport = new Viewport(g2d, mvp, camera, scene.getLights());
+        Viewport viewport = new Viewport(g2d, mvp, camera, scene.getLights(), width, height);
 
         // -------------
 

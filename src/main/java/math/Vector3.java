@@ -44,4 +44,13 @@ public class Vector3 {
     public Vector3 div(float scalar) {
         return new Vector3(x / scalar, y / scalar, z / scalar);
     }
+
+    public Vector4 toVector4(float w) {
+        return new Vector4(this.x, this.y, this.z, w);
+    }
+
+    public Vector3 negate() {
+        return new Vector3(-x, -y, -z);
+    }
+
 }

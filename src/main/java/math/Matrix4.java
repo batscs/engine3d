@@ -58,4 +58,12 @@ public class Matrix4 {
         }
         return new Vector3(x, y, z);
     }
+
+    public Vector4 transform(Vector4 vec) {
+        float x = m[0][0] * vec.x + m[0][1] * vec.y + m[0][2] * vec.z + m[0][3] * vec.w;
+        float y = m[1][0] * vec.x + m[1][1] * vec.y + m[1][2] * vec.z + m[1][3] * vec.w;
+        float z = m[2][0] * vec.x + m[2][1] * vec.y + m[2][2] * vec.z + m[2][3] * vec.w;
+        float w = m[3][0] * vec.x + m[3][1] * vec.y + m[3][2] * vec.z + m[3][3] * vec.w;
+        return new Vector4(x, y, z, w);
+    }
 }
