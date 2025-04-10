@@ -21,15 +21,12 @@ public class Engine implements Runnable {
     private final Set<Controller> controllers;
     private final Set<Integer> pressedKeys = new HashSet<>();
     private final Set<Integer> releasedKeys = new HashSet<>();
-
-    private final JFrame window;
     private float deltaTime = 0f;
 
     public Engine() {
         this.scene = new Scene();
         this.renderer = new Renderer(scene, 700, 700);
         this.controllers = new HashSet<>();
-        window = new JFrame("Java Engine 3D");
 
         // Set up the input listener.
         renderer.addKeyListener(new KeyAdapter() {
@@ -58,14 +55,6 @@ public class Engine implements Runnable {
     }
 
     public void start() {
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setSize(Renderer.getWidthStatic(), Renderer.getHeightStatic());
-        window.setLayout(new BorderLayout());
-        window.add(renderer, BorderLayout.CENTER);
-        window.setVisible(true);
-        window.pack();
-        window.setLocationRelativeTo(null);
-
         // Start the game loop in a separate thread.
         new Thread(this).start();
     }

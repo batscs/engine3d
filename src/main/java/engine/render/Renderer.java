@@ -10,6 +10,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import math.Vector3;
 
+import javax.swing.*;
+
 public class Renderer extends Canvas {
 
     @Getter
@@ -23,12 +25,25 @@ public class Renderer extends Canvas {
     @Getter
     private BufferedImage frame;
 
+    @Getter
+    private JFrame window;
+
     public Renderer(Scene scene, int width, int height) {
         Renderer.width = width;
         Renderer.height = height;
         this.scene = scene;
         this.camera = new Camera(new Vector3(0, 0, 0));
         frame = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+        window = new JFrame("Java Engine 3D");
+
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setSize(Renderer.getWidthStatic(), Renderer.getHeightStatic());
+        window.setLayout(new BorderLayout());
+        window.add(this, BorderLayout.CENTER);
+        window.setVisible(true);
+        window.pack();
+        window.setLocationRelativeTo(null);
     }
 
     // Static getters for window dimensions.
