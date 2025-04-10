@@ -57,6 +57,7 @@ public class Engine implements Runnable {
     }
 
     private void importScene(String path) {
+        System.out.println("Importing from " + path);
         try {
             OBJScene.build(this, path);
         } catch (IOException e) {
@@ -112,7 +113,6 @@ public class Engine implements Runnable {
                             droppedFiles = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
 
                     for (File file : droppedFiles) {
-                        System.out.println("Dropped file: " + file.getAbsolutePath());
                         importScene(file.getAbsolutePath());
                     }
                 } catch (Exception e) {
