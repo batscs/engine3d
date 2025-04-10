@@ -1,7 +1,7 @@
 package engine.scene.objects.mesh;
 
 import engine.scene.objects.SceneObject;
-import engine.scene.Viewport;
+import engine.render.Viewport;
 import math.Vector3;
 import java.awt.Color;
 

@@ -1,7 +1,7 @@
 package math;
 
-import engine.scene.Camera;
-import engine.Renderer;
+import engine.render.Camera;
+import engine.render.Renderer;
 
 import java.awt.*;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package engine.scene;
+package engine.render;
 
 import math.Matrix4;
 import math.Vector3;

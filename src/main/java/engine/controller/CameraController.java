@@ -1,7 +1,7 @@
 package engine.controller;
 
 import engine.Settings;
-import engine.scene.Camera;
+import engine.render.Camera;
 import math.Vector3;
 
 import java.awt.event.KeyEvent;

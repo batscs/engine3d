@@ -6,7 +6,7 @@ import engine.scene.objects.SceneObject;
 import lombok.Setter;
 import math.Triangle;
 import math.Vector3;
-import engine.scene.Viewport;
+import engine.render.Viewport;
 
 import java.awt.*;
 

@@ -1,11 +1,9 @@
-package engine;
+package engine.render;
 
+import engine.Settings;
 import engine.controller.Controller;
-import engine.scene.Camera;
 import engine.scene.Scene;
 import math.Matrix4;
-import math.Vector3;
-import engine.scene.Viewport;
 import engine.scene.objects.SceneObject;
 
 import javax.swing.*;

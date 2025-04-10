@@ -2,14 +2,14 @@ package engine;
 
 import engine.controller.CameraController;
 import engine.controller.ObjectController;
-import engine.scene.Camera;
+import engine.render.Camera;
+import engine.render.Renderer;
 import engine.scene.Scene;
 import engine.scene.objects.composite.SceneCube;
 import engine.scene.objects.SceneObject;
 import engine.scene.objects.light.SceneLight;
 import engine.scene.objects.light.SceneLightBulb;
 import engine.scene.objects.light.SceneLightFade;
-import engine.scene.objects.mesh.SceneLine;
 import math.Vector3;
 
 import java.awt.*;
@@ -32,7 +32,7 @@ public class Main {
         Renderer renderer = new Renderer(camera, scene, 700, 700);
 
         renderer.registerController(new CameraController(camera));
-        //renderer.registerController(new ObjectController(cube));
+        renderer.registerController(new ObjectController(cube));
 
         renderer.start();
     }

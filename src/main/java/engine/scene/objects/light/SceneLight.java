@@ -1,10 +1,10 @@
 package engine.scene.objects.light;
 
-import engine.Renderer;
+import engine.render.Renderer;
 import engine.scene.objects.SceneObject;
 import lombok.Getter;
 import math.Vector3;
-import engine.scene.Viewport;
+import engine.render.Viewport;
 
 import java.awt.*;
 

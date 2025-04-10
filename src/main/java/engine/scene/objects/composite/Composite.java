@@ -1,8 +1,7 @@
 package engine.scene.objects.composite;
 
-import engine.scene.Viewport;
+import engine.render.Viewport;
 import engine.scene.objects.SceneObject;
-import engine.scene.objects.mesh.SceneTriangle;
 import math.Vector3;
 
 import java.util.List;
