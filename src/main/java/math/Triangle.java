@@ -2,6 +2,7 @@ package math;
 
 import engine.render.Camera;
 import engine.render.Renderer;
+import engine.render.Viewport;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -69,18 +70,19 @@ public class Triangle {
         return edge1.cross(edge2).normalize();
     }
 
-    public Polygon getPolygon(Matrix4 viewport) {
-        Vector3 p0 = viewport.transform(v0);
-        Vector3 p1 = viewport.transform(v1);
-        Vector3 p2 = viewport.transform(v2);
+    public Polygon getPolygon(Viewport viewport) {
+        Matrix4 perspective = viewport.perspective;
+        Vector3 p0 = perspective.transform(v0);
+        Vector3 p1 = perspective.transform(v1);
+        Vector3 p2 = perspective.transform(v2);
 
         // Convert from NDC (-1 to 1) to screen coordinates
-        int x0 = (int) ((p0.x + 1) * 0.5f * Renderer.width);  // Assuming Renderer.WIDTH exists
-        int y0 = (int) ((1 - p0.y) * 0.5f * Renderer.height);
-        int x1 = (int) ((p1.x + 1) * 0.5f * Renderer.width);
-        int y1 = (int) ((1 - p1.y) * 0.5f * Renderer.height);
-        int x2 = (int) ((p2.x + 1) * 0.5f * Renderer.width);
-        int y2 = (int) ((1 - p2.y) * 0.5f * Renderer.height);
+        int x0 = (int) ((p0.x + 1) * 0.5f * viewport.width);  // Assuming Renderer.WIDTH exists
+        int y0 = (int) ((1 - p0.y) * 0.5f * viewport.height);
+        int x1 = (int) ((p1.x + 1) * 0.5f * viewport.width);
+        int y1 = (int) ((1 - p1.y) * 0.5f * viewport.height);
+        int x2 = (int) ((p2.x + 1) * 0.5f * viewport.width);
+        int y2 = (int) ((1 - p2.y) * 0.5f * viewport.height);
 
         Polygon poly = new Polygon();
         poly.addPoint(x0, y0);

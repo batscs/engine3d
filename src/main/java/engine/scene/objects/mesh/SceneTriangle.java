@@ -27,7 +27,7 @@ public class SceneTriangle implements SceneObject {
                 && !Settings.allowBackFacing
                 && tri.isBackFacing(viewport.camera)) return;
 
-        Polygon poly = tri.getPolygon(viewport.perspective);
+        Polygon poly = tri.getPolygon(viewport);
 
         float r = 0, g = 0, b = 0;
 

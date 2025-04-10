@@ -26,8 +26,8 @@ public class SceneLight implements SceneObject {
     @Override
     public void draw(Viewport viewport) {
         Vector3 lightProj = viewport.perspective.transform(position);
-        int x = (int) ((lightProj.x + 1) * 0.5f * Renderer.width);
-        int y = (int) ((1 - (lightProj.y + 1) * 0.5f) * Renderer.height);
+        int x = (int) ((lightProj.x + 1) * 0.5f * viewport.width);
+        int y = (int) ((1 - (lightProj.y + 1) * 0.5f) * viewport.height);
 
         Vector3 lightView = viewport.camera.getViewMatrix().transform(position);
         float distance = lightView.length();

@@ -39,8 +39,7 @@ public class CameraController extends Controller {
         if (getPressedKeys().contains(KeyEvent.VK_LEFT)) camera.yaw -= 0.2f * speed;
         if (getPressedKeys().contains(KeyEvent.VK_RIGHT)) camera.yaw += 0.2f * speed;
 
-        if (getPressedKeys().contains(KeyEvent.VK_F)) Settings.drawWireframes = !Settings.drawWireframes;
-        if (getPressedKeys().contains(KeyEvent.VK_B)) Settings.allowBackFacing = !Settings.allowBackFacing;
-
+        if (getReleasedKeys().contains(KeyEvent.VK_F)) Settings.drawWireframes = !Settings.drawWireframes;
+        if (getReleasedKeys().contains(KeyEvent.VK_B)) Settings.allowBackFacing = !Settings.allowBackFacing;
     }
 }

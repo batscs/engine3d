@@ -1,115 +1,50 @@
 package engine.render;
 
 import engine.Settings;
-import engine.controller.Controller;
 import engine.scene.Scene;
-import math.Matrix4;
 import engine.scene.objects.SceneObject;
-
-import javax.swing.*;
+import lombok.Getter;
+import lombok.Setter;
+import math.Matrix4;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import java.util.Set;
+import engine.controller.Controller;
+import math.Vector3;
 
-public class Renderer extends Canvas implements Runnable {
-    public static int width, height;
+public class Renderer extends Canvas {
+
+    @Setter
+    @Getter
+    private Camera camera;
+
+    @Setter
+    private Scene scene;
+
+    private static int width, height;
     private BufferedImage frame;
-    private final JFrame window;
-    private final Camera camera;
-    private final Set<Integer> pressedKeys = new HashSet<>();
-    private final Set<Integer> releasedKeys = new HashSet<>();
     private final Set<Controller> controllers = new HashSet<>();
-    private final Scene scene;
-    private float deltaTime = 0f;
 
-    public Renderer(Camera camera, Scene scene, int width, int height) {
+    public Renderer(Scene scene, int width, int height) {
         Renderer.width = width;
         Renderer.height = height;
         this.scene = scene;
-        this.camera = camera;
+        this.camera = new Camera(new Vector3(0, 0, 0));
         frame = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        window = new JFrame("Java Engine 3D");
-
-
-        addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) { pressedKeys.add(e.getKeyCode()); }
-            public void keyReleased(KeyEvent e) { pressedKeys.remove(e.getKeyCode()); releasedKeys.add(e.getKeyCode()); }
-        });
-
-        setFocusable(true);
-        addComponentListener(new java.awt.event.ComponentAdapter() {
-            @Override
-            public void componentResized(java.awt.event.ComponentEvent e) {
-                int newWidth = getWidth();
-                int newHeight = getHeight();
-                if (newWidth > 0 && newHeight > 0) {
-                    Renderer.width = newWidth;
-                    Renderer.height = newHeight;
-                    frame.flush(); // Clean up old image
-                    frame.getGraphics().dispose();
-                }
-            }
-        });
     }
 
-    public void registerController(Controller controller) {
-        controller.registerKeys(pressedKeys, releasedKeys);
-        controllers.add(controller);
+    // Static getters for window dimensions.
+    public static int getWidthStatic() { return width; }
+    public static int getHeightStatic() { return height; }
+
+    // Provide the current frame for drawing.
+    public BufferedImage getFrame() {
+        return frame;
     }
 
-    public void start() {
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setSize(width, height);
-        window.setLayout(new BorderLayout());
-        window.add(this, BorderLayout.CENTER);
-        window.setVisible(true);
-        window.pack();
-        window.setLocationRelativeTo(null);
-        new Thread(this).start();
-    }
-
-    @Override
-    public void run() {
-        createBufferStrategy(1);
-        BufferStrategy bs = getBufferStrategy();
-
-        long lastLogicUpdate = System.nanoTime();
-        long lastRedraw = System.nanoTime();
-        long tickrate = 1_000_000_000 / 32;
-
-        while (true) {
-            long currentTime = System.nanoTime();
-            deltaTime = (currentTime - lastRedraw) / 1_000_000_000.0f; // Convert to seconds
-            lastRedraw = currentTime;
-
-            float difference = currentTime - lastLogicUpdate;
-            if (difference > tickrate) {
-                tick();
-                lastLogicUpdate = currentTime;
-            }
-
-            updateInput();
-            render();
-
-            // Now draw to screen
-            Graphics g = bs.getDrawGraphics();
-            g.drawImage(frame, 0, 0, null);
-            g.dispose();
-            bs.show();
-        }
-    }
-
-    private void updateInput() {
-        controllers.forEach(controller -> controller.update(deltaTime));
-
-        releasedKeys.clear();
-    }
-
-    private void render() {
+    public void render() {
+        // If size has changed, recreate frame.
         if (frame.getWidth() != width || frame.getHeight() != height) {
             frame.flush();
             frame = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -122,29 +57,31 @@ public class Renderer extends Canvas implements Runnable {
         Graphics g = frame.getGraphics();
         Graphics2D g2d = (Graphics2D) g;
 
+        // Create a viewport to handle drawing the scene.
         Viewport viewport = new Viewport(g2d, mvp, camera, scene.getLights(), width, height);
 
-        // -------------
-
+        // Clear the background.
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, width, height);
 
+        // Draw all scene objects (sorted by distance if needed).
         for (SceneObject obj : scene.getAllByDistance(camera.position)) {
             obj.draw(viewport);
         }
 
+        // Draw Heads-Up Display.
         drawHud(g2d);
     }
 
     private void drawHud(Graphics2D g2d) {
-        // Calculate and draw FPS
-        int fps = (int)(1f / deltaTime);
+        // For simplicity, we assume a constant FPS display here.
         g2d.setColor(Color.BLACK);
         g2d.setFont(new Font("Arial", Font.PLAIN, 16));
-        g2d.drawString("FPS: " + fps, 10, 20);
+        g2d.drawString("FPS: " + (int) (1 / Settings.deltaTime), 10, 20);
         g2d.drawString("Wireframes (F): " + Settings.drawWireframes, 10, 35);
         g2d.drawString("Backfacing (B): " + Settings.allowBackFacing, 10, 50);
 
+        // Draw crosshair.
         int crosshairSize = 10;
         int centerX = width / 2;
         int centerY = height / 2;
@@ -153,14 +90,5 @@ public class Renderer extends Canvas implements Runnable {
         g2d.setColor(Color.LIGHT_GRAY);
         g2d.drawLine(centerX - crosshairSize, centerY, centerX + crosshairSize, centerY);
         g2d.drawLine(centerX, centerY - crosshairSize, centerX, centerY + crosshairSize);
-    }
-
-    private void tick() {
-        scene.getAll().forEach(SceneObject::tick);
-    }
-
-    @Override
-    public void paint(Graphics g) {
-        g.drawImage(frame, 0, 0, null);
     }
 }

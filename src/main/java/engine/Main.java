@@ -12,28 +12,24 @@ import engine.scene.objects.light.SceneLightBulb;
 import engine.scene.objects.light.SceneLightFade;
 import math.Vector3;
 
-import java.awt.*;
-
 public class Main {
     public static void main(String[] args) {
         Scene scene = new Scene();
-
-        scene.add(new SceneLight(new Vector3(-2, 3, 3), Color.RED, 2f));
-        scene.add(new SceneLightBulb(new Vector3(2, 0, 3), Color.BLUE, 1.2f));
-        scene.add(new SceneLightFade(new Vector3(-2, -2, 7), Color.GREEN, 1f));
+        scene.add(new SceneLight(new Vector3(-2, 3, 3), java.awt.Color.RED, 2f));
+        scene.add(new SceneLightBulb(new Vector3(2, 0, 3), java.awt.Color.BLUE, 1.2f));
+        scene.add(new SceneLightFade(new Vector3(-2, -2, 7), java.awt.Color.GREEN, 1f));
 
         SceneObject cube = new SceneCube(0, 0, 5, 2);
         scene.add(cube);
 
-        Camera camera = new Camera(new Vector3(2, 2, 0));
-        camera.yaw = -0.5f;
-        camera.pitch = -0.2f;
+        Engine engine = new Engine();
 
-        Renderer renderer = new Renderer(camera, scene, 700, 700);
+        engine.setCamera(new Vector3(2, 2, 0), -0.5f, -0.2f);
+        engine.registerController(new CameraController(engine.getCamera()));
+        engine.registerController(new ObjectController(cube));
 
-        renderer.registerController(new CameraController(camera));
-        renderer.registerController(new ObjectController(cube));
+        engine.setScene(scene);
 
-        renderer.start();
+        engine.start();
     }
 }
