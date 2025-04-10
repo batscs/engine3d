@@ -1,6 +1,7 @@
 package assets.scene.io;
 
 import engine.Engine;
+import engine.controller.ObjectController;
 import engine.scene.Scene;
 import engine.scene.objects.SceneObject;
 import engine.scene.objects.composite.Composite;
@@ -21,6 +22,9 @@ public class OBJScene {
     public static void build(Engine engine, String path) throws IOException {
         Scene scene = new Scene();
         List<Vector3> vertices = new ArrayList<>();
+        List<SceneObject> faces = new ArrayList<>();
+
+        boolean controllable = false;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
             String line;
@@ -53,7 +57,7 @@ public class OBJScene {
                         faceVerts.add(vertices.get(vertexIndex));
                     }
 
-                    scene.add(new ScenePolygon(faceVerts));
+                    faces.add(new ScenePolygon(faceVerts));
                 }
                 // Parsing lights (l)
                 else if (line.startsWith("l ")) {
@@ -85,11 +89,20 @@ public class OBJScene {
                                     Float.parseFloat(tokens[2]),
                                     Float.parseFloat(tokens[3])
                                     ), Float.parseFloat(tokens[4]), Float.parseFloat(tokens[5]));
-                        
+
                     }
+                } else if (line.startsWith("_ctrl")) {
+                    controllable = true;
                 }
 
             }
+        }
+
+        SceneObject model = new Composite(faces);
+        scene.add(model);
+
+        if (controllable) {
+            engine.registerController(new ObjectController(model));
         }
 
         // Add the polygons and lights to the scene

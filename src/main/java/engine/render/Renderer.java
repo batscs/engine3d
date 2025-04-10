@@ -7,7 +7,16 @@ import lombok.Getter;
 import lombok.Setter;
 import math.Matrix4;
 import java.awt.*;
+import java.util.List;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetAdapter;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
+
 import math.Vector3;
 
 import javax.swing.*;
@@ -34,16 +43,6 @@ public class Renderer extends Canvas {
         this.scene = scene;
         this.camera = new Camera(new Vector3(0, 0, 0));
         frame = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-
-        window = new JFrame("Java Engine 3D");
-
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setSize(Renderer.getWidthStatic(), Renderer.getHeightStatic());
-        window.setLayout(new BorderLayout());
-        window.add(this, BorderLayout.CENTER);
-        window.setVisible(true);
-        window.pack();
-        window.setLocationRelativeTo(null);
     }
 
     // Static getters for window dimensions.
@@ -94,8 +93,8 @@ public class Renderer extends Canvas {
         g2d.drawString("Wireframes (F): " + Settings.drawWireframes, 10, 35);
         g2d.drawString("Backfacing (B): " + Settings.allowBackFacing, 10, 50);
 
-        //String cam = String.format("(%f %f %f) y:%f p:%f", camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
-        //g2d.drawString("Camera: " + cam, 10, 65);
+        String cam = String.format("(%f %f %f) y:%f p:%f", camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
+        g2d.drawString("Camera: " + cam, 10, 65);
 
         // Draw crosshair.
         int crosshairSize = 10;

@@ -14,7 +14,7 @@ public class Main {
         // TestScene.build(engine);
 
         try {
-            String resourcePath = "/models/bear.obj"; // adjust to your structure
+            String resourcePath = "/models/monkey.obj"; // adjust to your structure
             OBJScene.build(engine, PathUtility.getResourcePath(resourcePath));
         } catch (Exception e) {
             e.printStackTrace();

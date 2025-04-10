@@ -17,6 +17,8 @@ public class ObjectController extends Controller {
     public void update(float deltaTime) {
         float speed = deltaTime * 5;
 
+        System.out.println("hi");
+
         // Basic movement vectors
         Vector3 forward = new Vector3(0, 0, -1); // -Z is "forward"
         Vector3 right = new Vector3(1, 0, 0);    // +X is "right"

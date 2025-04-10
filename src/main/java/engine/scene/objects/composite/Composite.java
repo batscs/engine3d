@@ -3,6 +3,7 @@ package engine.scene.objects.composite;
 import engine.render.Viewport;
 import engine.scene.objects.SceneObject;
 import math.Vector3;
+import util.SceneUtil;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class Composite implements SceneObject {
 
     @Override
     public void draw(Viewport viewport) {
-        meshes.forEach(mesh -> mesh.draw(viewport));
+        SceneUtil.sortByDistance(meshes.stream().toList(), viewport.camera.position).forEach(mesh -> mesh.draw(viewport));
     }
 
     @Override

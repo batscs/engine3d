@@ -1,5 +1,6 @@
 package engine;
 
+import assets.scene.io.OBJScene;
 import engine.controller.Controller;
 import engine.render.Camera;
 import engine.render.Renderer;
@@ -7,12 +8,21 @@ import engine.scene.Scene;
 import engine.scene.objects.SceneObject;
 import math.Vector3;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetAdapter;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Engine implements Runnable {
@@ -22,11 +32,13 @@ public class Engine implements Runnable {
     private final Set<Integer> pressedKeys = new HashSet<>();
     private final Set<Integer> releasedKeys = new HashSet<>();
     private float deltaTime = 0f;
+    private final JFrame window;
 
     public Engine() {
         this.scene = new Scene();
         this.renderer = new Renderer(scene, 700, 700);
         this.controllers = new HashSet<>();
+        window = new JFrame("Java Engine 3D");
 
         // Set up the input listener.
         renderer.addKeyListener(new KeyAdapter() {
@@ -44,6 +56,14 @@ public class Engine implements Runnable {
         renderer.setFocusable(true);
     }
 
+    private void importScene(String path) {
+        try {
+            OBJScene.build(this, path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void setScene(Scene scene) {
         this.scene = scene;
         renderer.setScene(scene);
@@ -55,8 +75,51 @@ public class Engine implements Runnable {
     }
 
     public void start() {
-        // Start the game loop in a separate thread.
+        initWindow();
         new Thread(this).start();
+    }
+
+    private void initWindow() {
+        JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+        JMenuItem loadItem = new JMenuItem("Load File");
+        loadItem.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser();
+            if (chooser.showOpenDialog(window) == JFileChooser.APPROVE_OPTION) {
+                File file = chooser.getSelectedFile();
+                importScene(file.getAbsolutePath());
+            }
+        });
+        fileMenu.add(loadItem);
+        menuBar.add(fileMenu);
+        window.setJMenuBar(menuBar);
+
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setSize(Renderer.getWidthStatic(), Renderer.getHeightStatic());
+        window.setLayout(new BorderLayout());
+        window.add(renderer, BorderLayout.CENTER);
+        window.setVisible(true);
+        window.pack();
+        window.setLocationRelativeTo(null);
+
+        new DropTarget(renderer, new DropTargetAdapter() {
+            @Override
+            public void drop(DropTargetDropEvent dtde) {
+                try {
+                    dtde.acceptDrop(DnDConstants.ACTION_COPY);
+                    Transferable transferable = dtde.getTransferable();
+                    java.util.List<File>
+                            droppedFiles = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
+
+                    for (File file : droppedFiles) {
+                        System.out.println("Dropped file: " + file.getAbsolutePath());
+                        importScene(file.getAbsolutePath());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override

@@ -1,10 +1,9 @@
-# Blender v2.65 (sub 1) OBJ File: ''
-# www.blender.org
-# mtllib monkey.mtl
-# o Suzanne
+_ctrl
 
 l 0.0 0.0 5.0 1.0 1.0 0.8 1.0 normal
 l 0.0 0.0 -5.0 1.0 1.0 0.8 1.0 fade
+
+c -0.4 0.2 5.0 3 -0.1
 
 v 0.477241 0.205729 0.676920
 v -0.507134 0.205729 0.676920
