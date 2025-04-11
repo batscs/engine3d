@@ -4,7 +4,7 @@ import math.Vector3;
 
 import java.util.Random;
 
-public class Utility {
+public class MathUtility {
 
     private static final Random random = new Random();
 

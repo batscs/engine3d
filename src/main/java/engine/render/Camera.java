@@ -1,15 +1,22 @@
-package engine.scene;
+package engine.render;
 
+import lombok.Setter;
 import math.Matrix4;
 import math.Vector3;
 
 public class Camera {
+
     public Vector3 position;
     public float yaw = 0f;
     public float pitch = 0f;
 
-    public Camera(Vector3 position) {
+    @Setter
+    public int width, height;
+
+    public Camera(Vector3 position, int width, int height) {
         this.position = position;
+        this.width = width;
+        this.height = height;
     }
 
     public Matrix4 getViewMatrix() {
@@ -23,5 +30,11 @@ public class Camera {
         Vector3 target = position.add(forward);
 
         return Matrix4.lookAt(position, target, up);
+    }
+
+    public Matrix4 getPerspectiveMatrix() {
+        Matrix4 projection = Matrix4.perspective(70, width / (float) height, 0.1f, 100f);
+        Matrix4 view = getViewMatrix();
+        return view.mul(projection);
     }
 }
