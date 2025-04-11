@@ -5,17 +5,10 @@ import engine.scene.Scene;
 import engine.scene.objects.SceneObject;
 import lombok.Getter;
 import lombok.Setter;
-import math.Matrix4;
 import java.awt.*;
-import java.util.List;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetAdapter;
-import java.awt.dnd.DropTargetDropEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
 
 import math.Vector3;
 
@@ -29,7 +22,8 @@ public class Renderer extends Canvas {
     @Setter
     private Scene scene;
 
-    private static int width, height;
+    @Getter
+    private int width, height;
     // Provide the current frame for drawing.
     @Getter
     private BufferedImage frame;
@@ -38,16 +32,23 @@ public class Renderer extends Canvas {
     private JFrame window;
 
     public Renderer(Scene scene, int width, int height) {
-        Renderer.width = width;
-        Renderer.height = height;
+        this.width = width;
+        this.height = height;
         this.scene = scene;
         this.camera = new Camera(new Vector3(0, 0, 0), width, height);
         frame = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-    }
 
-    // Static getters for window dimensions.
-    public static int getWidthStatic() { return width; }
-    public static int getHeightStatic() { return height; }
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                Renderer.this.width = Renderer.super.getWidth();
+                Renderer.this.height = Renderer.super.getHeight();
+                frame = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+                camera.setWidth(width);
+                camera.setHeight(height);
+            }
+        });
+    }
 
     public void setCamera(Vector3 vector3, float yaw, float pitch) {
         camera.position = vector3;

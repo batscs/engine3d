@@ -96,7 +96,7 @@ public class Engine implements Runnable {
         window.setJMenuBar(menuBar);
 
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setSize(Renderer.getWidthStatic(), Renderer.getHeightStatic());
+        window.setSize(renderer.getWidth(), renderer.getHeight());
         window.setLayout(new BorderLayout());
         window.add(renderer, BorderLayout.CENTER);
         window.setVisible(true);

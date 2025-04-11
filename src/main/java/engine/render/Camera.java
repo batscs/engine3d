@@ -1,5 +1,6 @@
 package engine.render;
 
+import lombok.Setter;
 import math.Matrix4;
 import math.Vector3;
 
@@ -9,6 +10,7 @@ public class Camera {
     public float yaw = 0f;
     public float pitch = 0f;
 
+    @Setter
     public int width, height;
 
     public Camera(Vector3 position, int width, int height) {
