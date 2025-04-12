@@ -1,7 +1,5 @@
 package math;
 
-import engine.render.Camera;
-import engine.render.Renderer;
 import engine.render.Viewport;
 
 import java.awt.*;

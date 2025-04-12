@@ -41,7 +41,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>engine.Main</mainClass>
+                            <mainClass>app.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

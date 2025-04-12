@@ -1,4 +1,4 @@
-package assets.scene.io;
+package engine.assets.io;
 
 import engine.Engine;
 import engine.controller.ObjectController;

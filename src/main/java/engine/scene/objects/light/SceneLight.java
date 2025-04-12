@@ -1,6 +1,5 @@
 package engine.scene.objects.light;
 
-import engine.render.Renderer;
 import engine.scene.objects.SceneObject;
 import lombok.Getter;
 import math.Vector3;

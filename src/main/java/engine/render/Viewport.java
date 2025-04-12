@@ -1,13 +1,10 @@
 package engine.render;
 
 import engine.scene.Scene;
-import engine.scene.objects.SceneObject;
 import lombok.Getter;
 import math.Matrix4;
-import engine.scene.objects.light.SceneLight;
 
 import java.awt.*;
-import java.util.List;
 
 @Getter
 public class Viewport {

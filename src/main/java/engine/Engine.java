@@ -1,6 +1,6 @@
 package engine;
 
-import assets.scene.io.OBJScene;
+import engine.assets.io.OBJScene;
 import engine.controller.Controller;
 import engine.render.Camera;
 import engine.render.Renderer;
@@ -26,37 +26,24 @@ import java.util.List;
 import java.util.Set;
 
 public class Engine implements Runnable {
-    private final Renderer renderer;
+    private Renderer renderer;
     private Scene scene;
     private final Set<Controller> controllers;
-    private final Set<Integer> pressedKeys = new HashSet<>();
-    private final Set<Integer> releasedKeys = new HashSet<>();
+    private Set<Integer> pressedKeys;
+    private Set<Integer> releasedKeys;
     private float deltaTime = 0f;
-    private final JFrame window;
+    private boolean running;
+
 
     public Engine() {
         this.scene = new Scene();
-        this.renderer = new Renderer(scene, 700, 700);
         this.controllers = new HashSet<>();
-        window = new JFrame("Java Engine 3D");
-
-        // Set up the input listener.
-        renderer.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                pressedKeys.add(e.getKeyCode());
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                pressedKeys.remove(e.getKeyCode());
-                releasedKeys.add(e.getKeyCode());
-            }
-        });
-        renderer.setFocusable(true);
+        this.running = false;
+        this.pressedKeys = new HashSet<>();
+        this.releasedKeys = new HashSet<>();
     }
 
-    private void importScene(String path) {
+    public void importScene(String path) {
         System.out.println("Importing from " + path);
         try {
             OBJScene.build(this, path);
@@ -75,34 +62,36 @@ public class Engine implements Runnable {
         controller.registerKeys(pressedKeys, releasedKeys);
     }
 
-    public void start() {
-        initWindow();
+    public void start(JFrame frame) {
+        this.renderer = new Renderer(scene, frame.getWidth(), frame.getHeight());
+
+        renderer.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                pressedKeys.add(e.getKeyCode());
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                pressedKeys.remove(e.getKeyCode());
+                releasedKeys.add(e.getKeyCode());
+            }
+        });
+
+        renderer.setFocusable(true);
+
+        initWindow(frame);
+
+        running = true;
         new Thread(this).start();
     }
 
-    private void initWindow() {
-        JMenuBar menuBar = new JMenuBar();
-        JMenu fileMenu = new JMenu("File");
-        JMenuItem loadItem = new JMenuItem("Load File");
-        loadItem.addActionListener(e -> {
-            JFileChooser chooser = new JFileChooser();
-            chooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
-            if (chooser.showOpenDialog(window) == JFileChooser.APPROVE_OPTION) {
-                File file = chooser.getSelectedFile();
-                importScene(file.getAbsolutePath());
-            }
-        });
-        fileMenu.add(loadItem);
-        menuBar.add(fileMenu);
-        window.setJMenuBar(menuBar);
+    public void stop() {
+        running = false;
+    }
 
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setSize(renderer.getWidth(), renderer.getHeight());
-        window.setLayout(new BorderLayout());
-        window.add(renderer, BorderLayout.CENTER);
-        window.setVisible(true);
-        window.pack();
-        window.setLocationRelativeTo(null);
+    private void initWindow(JFrame frame) {
+        frame.add(renderer, BorderLayout.CENTER);
 
         new DropTarget(renderer, new DropTargetAdapter() {
             @Override
@@ -132,7 +121,7 @@ public class Engine implements Runnable {
         long lastRenderTime = System.nanoTime();
         long tickInterval = 1_000_000_000 / 32; // 32 ticks per second
 
-        while (true) {
+        while (running) {
             long currentTime = System.nanoTime();
             deltaTime = (currentTime - lastRenderTime) / 1_000_000_000.0f;
             Settings.deltaTime = deltaTime;
@@ -175,5 +164,9 @@ public class Engine implements Runnable {
 
     public Camera getCamera() {
         return renderer.getCamera();
+    }
+
+    public void unregisterAllController() {
+        controllers.clear();
     }
 }

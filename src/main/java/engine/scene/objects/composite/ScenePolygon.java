@@ -1,8 +1,5 @@
 package engine.scene.objects.composite;
 
-import engine.render.Viewport;
-import engine.scene.objects.SceneObject;
-import engine.scene.objects.mesh.ScenePlane;
 import engine.scene.objects.mesh.SceneTriangle;
 import math.Triangle;
 import math.Vector3;

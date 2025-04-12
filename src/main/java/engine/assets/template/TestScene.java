@@ -1,4 +1,4 @@
-package assets.scene.template;
+package engine.assets.template;
 
 import engine.Engine;
 import engine.controller.ObjectController;
