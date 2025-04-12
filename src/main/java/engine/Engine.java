@@ -86,6 +86,7 @@ public class Engine implements Runnable {
         JMenuItem loadItem = new JMenuItem("Load File");
         loadItem.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
+            chooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
             if (chooser.showOpenDialog(window) == JFileChooser.APPROVE_OPTION) {
                 File file = chooser.getSelectedFile();
                 importScene(file.getAbsolutePath());
