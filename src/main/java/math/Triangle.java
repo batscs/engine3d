@@ -41,8 +41,8 @@ public class Triangle {
         return tris;
     }
 
-    public boolean isBackFacing(Camera camera) {
-        return angle(camera.position) >= 0;
+    public boolean isBackFacing(Vector3 pov) {
+        return angle(pov) >= 0;
     }
 
     public Triangle add(Vector3 adjustment) {

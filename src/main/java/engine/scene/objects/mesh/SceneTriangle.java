@@ -25,7 +25,7 @@ public class SceneTriangle implements SceneObject {
     public void draw(Viewport viewport) {
         if (!allowBackFacing
                 && !Settings.allowBackFacing
-                && tri.isBackFacing(viewport.getCamera())) return;
+                && tri.isBackFacing(viewport.getCamera().position)) return;
 
         Polygon poly = tri.getPolygon(viewport);
 
