@@ -6,6 +6,7 @@ import engine.render.Camera;
 import engine.render.Renderer;
 import engine.scene.Scene;
 import engine.scene.objects.SceneObject;
+import lombok.Getter;
 import math.Vector3;
 
 import javax.swing.*;
@@ -27,6 +28,8 @@ import java.util.Set;
 
 public class Engine implements Runnable {
     private Renderer renderer;
+
+    @Getter
     private Scene scene;
     private final Set<Controller> controllers;
     private Set<Integer> pressedKeys;

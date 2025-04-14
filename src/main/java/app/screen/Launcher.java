@@ -12,9 +12,13 @@ import java.awt.event.ActionListener;
 public class Launcher implements Screen {
 
     private final ActionListener startAction;
+    private final ActionListener hostAction;
+    private final ActionListener joinAction;
 
-    public Launcher(ActionListener startAction) {
+    public Launcher(ActionListener startAction, ActionListener hostAction, ActionListener joinAction) {
         this.startAction = startAction;
+        this.hostAction = hostAction;
+        this.joinAction = joinAction;
     }
 
     @Override
@@ -31,10 +35,8 @@ public class Launcher implements Screen {
         // Create and add buttons
         centerPanel.add(createStyledButton("Start", startAction));
         centerPanel.add(Box.createVerticalStrut(20)); // spacing
-        centerPanel.add(createStyledButton("Host", e -> {
-            System.out.println("Host button clicked");
-            // Add additional host logic here
-        }));
+        centerPanel.add(createStyledButton("Host", hostAction));
+        centerPanel.add(createStyledButton("Join", joinAction));
 
         // Add the centered panel to the frame
         frame.add(centerPanel, BorderLayout.CENTER);

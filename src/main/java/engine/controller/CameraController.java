@@ -41,5 +41,7 @@ public class CameraController extends Controller {
 
         if (getReleasedKeys().contains(KeyEvent.VK_F)) Settings.drawWireframes = !Settings.drawWireframes;
         if (getReleasedKeys().contains(KeyEvent.VK_B)) Settings.allowBackFacing = !Settings.allowBackFacing;
+
+        camera.pitch = Math.max(-1.55f, Math.min(1.55f, camera.pitch));
     }
 }

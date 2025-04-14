@@ -2,12 +2,9 @@ package app;
 
 import app.screen.EngineScreen;
 import app.screen.Launcher;
+import app.screen.MultiplayerScreen;
 
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
+import javax.swing.*;
 import java.awt.BorderLayout;
 import java.io.File;
 
@@ -19,8 +16,8 @@ public class Application {
     private final Launcher launcher;
 
     public Application() {
-        engine = new EngineScreen(e -> switchToLauncher());
-        launcher = new Launcher(e -> switchToEngine());
+        engine = new EngineScreen();
+        launcher = new Launcher(e -> switchToEngine(), e -> hostEngine(), e -> joinEngine());
 
         frame = new JFrame("Java Engine 3D");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -62,6 +59,18 @@ public class Application {
     private void switchToEngine() {
         // Create and initialize your Engine
         screenManager.switchTo(engine);
+    }
+
+    private void hostEngine() {
+        screenManager.switchTo(new MultiplayerScreen());
+    }
+
+    private void joinEngine() {
+        String endpoint = JOptionPane.showInputDialog(frame, "Enter server IP (e.g. 127.0.0.1:1111)", "Join Server", JOptionPane.QUESTION_MESSAGE);
+        if (endpoint != null && !endpoint.isBlank()) {
+            MultiplayerScreen joinScreen = new MultiplayerScreen(endpoint);
+            screenManager.switchTo(joinScreen);
+        }
     }
 
     private void switchToLauncher() {

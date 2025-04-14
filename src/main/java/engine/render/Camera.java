@@ -1,11 +1,13 @@
 package engine.render;
 
+import lombok.Getter;
 import lombok.Setter;
 import math.Matrix4;
 import math.Vector3;
 
 public class Camera {
 
+    @Getter
     public Vector3 position;
     public float yaw = 0f;
     public float pitch = 0f;

@@ -13,7 +13,7 @@ public class EngineScreen implements Screen {
 
     private final Engine engine;
 
-    public EngineScreen(ActionListener exitListener) {
+    public EngineScreen() {
         this.engine = new Engine();
     }
 
