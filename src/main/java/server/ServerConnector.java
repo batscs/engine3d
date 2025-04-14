@@ -4,12 +4,15 @@ import engine.render.Camera;
 import engine.render.Viewport;
 import engine.scene.objects.SceneObject;
 import engine.scene.objects.composite.SceneCube;
+import lombok.Getter;
 import math.Vector3;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -113,17 +116,15 @@ public class ServerConnector {
         }
     }
 
-    public void draw(Viewport viewport) {
-        for (SceneObject player : players.values()) {
-            player.draw(viewport);
-        }
-    }
-
     public void disconnect() {
         running = false;
         try {
             if (socket != null) socket.close();
         } catch (Exception ignored) {}
         players.clear();
+    }
+
+    public List<SceneObject> getPlayers() {
+        return new ArrayList<>(players.values());
     }
 }

@@ -1,10 +1,12 @@
 package engine.scene.objects.composite;
 
 import engine.render.Viewport;
+import engine.scene.objects.Renderable;
 import engine.scene.objects.SceneObject;
 import math.Vector3;
 import util.SceneUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Composite implements SceneObject {
@@ -17,11 +19,6 @@ public class Composite implements SceneObject {
         }
 
         this.meshes = meshes;
-    }
-
-    @Override
-    public void draw(Viewport viewport) {
-        SceneUtil.sortByDistance(meshes.stream().toList(), viewport.getCamera().position).forEach(mesh -> mesh.draw(viewport));
     }
 
     @Override
@@ -38,6 +35,11 @@ public class Composite implements SceneObject {
         }
 
         return sum.div(meshes.size());
+    }
+
+    @Override
+    public List<Renderable> getRenderables() {
+        return meshes.stream().flatMap(mesh -> mesh.getRenderables().stream()).toList();
     }
 
     @Override

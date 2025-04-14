@@ -2,7 +2,7 @@ package engine.render;
 
 import engine.Settings;
 import engine.scene.Scene;
-import engine.scene.objects.SceneObject;
+import engine.scene.objects.Renderable;
 import lombok.Getter;
 import lombok.Setter;
 import java.awt.*;
@@ -74,7 +74,7 @@ public class Renderer extends Canvas {
         g.fillRect(0, 0, width, height);
 
         // Draw all scene objects (sorted by distance if needed).
-        for (SceneObject obj : scene.getAllByDistance(camera.position)) {
+        for (Renderable obj : scene.getAllRenderablesByDistance(camera.position)) {
             obj.draw(viewport);
         }
 

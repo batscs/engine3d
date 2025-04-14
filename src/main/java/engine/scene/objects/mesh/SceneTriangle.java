@@ -1,6 +1,7 @@
 package engine.scene.objects.mesh;
 
 import engine.Settings;
+import engine.scene.objects.Renderable;
 import engine.scene.objects.light.SceneLight;
 import engine.scene.objects.SceneObject;
 import lombok.Setter;
@@ -10,8 +11,10 @@ import math.Vector3;
 import engine.render.Viewport;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class SceneTriangle implements SceneObject {
+public class SceneTriangle implements SceneObject, Renderable {
 
     private Triangle tri;
 
@@ -52,6 +55,11 @@ public class SceneTriangle implements SceneObject {
     @Override
     public Vector3 getPosition() {
         return tri.center();
+    }
+
+    @Override
+    public List<Renderable> getRenderables() {
+        return List.of(this);
     }
 
     @Override

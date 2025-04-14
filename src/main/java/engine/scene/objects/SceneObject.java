@@ -3,13 +3,15 @@ package engine.scene.objects;
 import engine.render.Viewport;
 import math.Vector3;
 
-public interface SceneObject {
+import java.util.List;
 
-    void draw(Viewport viewport);
+public interface SceneObject {
 
     void tick();
 
     Vector3 getPosition();
+
+    List<Renderable> getRenderables();
 
     default void move(Vector3 adjustment) {
 

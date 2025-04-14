@@ -158,7 +158,7 @@ public class Engine implements Runnable {
 
     private void updateGame() {
         // Update/tick all objects in the scene.
-        scene.getAll().forEach(SceneObject::tick);
+        scene.getAllSceneObjects().forEach(SceneObject::tick);
     }
 
     public void setCamera(Vector3 vector3, float yaw, float pitch) {

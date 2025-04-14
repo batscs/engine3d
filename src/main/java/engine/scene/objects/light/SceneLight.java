@@ -1,13 +1,15 @@
 package engine.scene.objects.light;
 
+import engine.scene.objects.Renderable;
 import engine.scene.objects.SceneObject;
 import lombok.Getter;
 import math.Vector3;
 import engine.render.Viewport;
 
 import java.awt.*;
+import java.util.List;
 
-public class SceneLight implements SceneObject {
+public class SceneLight implements SceneObject, Renderable {
 
     @Getter
     Color color;
@@ -44,5 +46,10 @@ public class SceneLight implements SceneObject {
     public void tick() {
         //Vector3 adjustment = Utility.randomVector3(-0.05f, 0.05f);
         //position = position.add(adjustment);
+    }
+
+    @Override
+    public List<Renderable> getRenderables() {
+        return List.of(this);
     }
 }

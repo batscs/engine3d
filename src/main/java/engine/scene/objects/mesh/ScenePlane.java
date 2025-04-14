@@ -1,9 +1,12 @@
 package engine.scene.objects.mesh;
 
 import engine.render.Viewport;
+import engine.scene.objects.Renderable;
 import engine.scene.objects.SceneObject;
 import math.Triangle;
 import math.Vector3;
+
+import java.util.List;
 
 public class ScenePlane implements SceneObject {
 
@@ -24,12 +27,6 @@ public class ScenePlane implements SceneObject {
     }
 
     @Override
-    public void draw(Viewport viewport) {
-        triangle1.draw(viewport);
-        triangle2.draw(viewport);
-    }
-
-    @Override
     public void tick() {
         triangle1.tick();
         triangle2.tick();
@@ -38,5 +35,10 @@ public class ScenePlane implements SceneObject {
     @Override
     public Vector3 getPosition() {
         return triangle1.getPosition().cross(triangle2.getPosition());
+    }
+
+    @Override
+    public List<Renderable> getRenderables() {
+        return List.of(triangle1, triangle2);
     }
 }

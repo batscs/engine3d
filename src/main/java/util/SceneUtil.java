@@ -1,5 +1,6 @@
 package util;
 
+import engine.scene.objects.Renderable;
 import engine.scene.objects.SceneObject;
 import math.Vector3;
 
@@ -8,8 +9,8 @@ import java.util.List;
 
 public class SceneUtil {
 
-    public static List<SceneObject> sortByDistance(List<? extends SceneObject> os, Vector3 position) {
-        List<SceneObject> result = new ArrayList<>(os);
+    public static List<Renderable> sortByDistance(List<? extends Renderable> os, Vector3 position) {
+        List<Renderable> result = new ArrayList<>(os);
 
         result.sort((a, b) -> {
             float distA = a.getPosition().sub(position).length();
