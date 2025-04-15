@@ -53,4 +53,9 @@ public class Vector3 {
         return new Vector3(-x, -y, -z);
     }
 
+    public void move(Vector3 adjustment) {
+        x += adjustment.x;
+        y += adjustment.y;
+        z += adjustment.z;
+    }
 }

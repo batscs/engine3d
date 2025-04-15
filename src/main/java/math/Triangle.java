@@ -68,4 +68,9 @@ public class Triangle {
         return edge1.cross(edge2).normalize();
     }
 
+    public void move(Vector3 adjustment) {
+        v0.move(adjustment);
+        v1.move(adjustment);
+        v2.move(adjustment);
+    }
 }
