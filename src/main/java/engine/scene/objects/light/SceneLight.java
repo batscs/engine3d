@@ -52,4 +52,14 @@ public class SceneLight implements SceneObject, Renderable {
     public List<Renderable> getRenderables() {
         return List.of(this);
     }
+
+    @Override
+    public void move(Vector3 adjustment) {
+        position.move(adjustment);
+    }
+
+    @Override
+    public void setPosition(Vector3 pos) {
+        position = pos;
+    }
 }

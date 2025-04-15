@@ -1,17 +1,21 @@
 package server;
 
 import engine.render.Camera;
-import engine.render.Viewport;
 import engine.scene.objects.Renderable;
 import engine.scene.objects.SceneObject;
+import engine.scene.objects.composite.SceneCube;
 import math.Vector3;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ServerObject implements SceneObject {
 
     private final ServerConnector serverConnector;
+    // Keep a cache of remote player scene objects.
+    private final Map<Integer, SceneObject> remotePlayers = new HashMap<>();
 
     public ServerObject(Camera pov, String endpoint) {
         serverConnector = new ServerConnector(pov, endpoint);
@@ -22,21 +26,52 @@ public class ServerObject implements SceneObject {
         serverConnector.tick();
     }
 
-    // For our own position, you might use more advanced logic.
-    // Here, we simply return a fixed position (or one that could be updated later).
+    // This returns our own position.
     @Override
     public Vector3 getPosition() {
-        // For testing you may wish to return a position that changes over time.
+        // For testing, you may wish to return a dynamically updated position.
         return new Vector3(0, 0, 0);
     }
 
     @Override
     public List<Renderable> getRenderables() {
+        // Get the latest raw position data from the server connector.
+        Map<Integer, Vector3> latestData = serverConnector.getRemotePositions();
+
+        // Update or create remote player scene objects.
+        for (Map.Entry<Integer, Vector3> entry : latestData.entrySet()) {
+            int playerId = entry.getKey();
+            Vector3 newPos = entry.getValue();
+
+            if (remotePlayers.containsKey(playerId)) {
+                // Calculate adjustment based on the difference between the new and current positions.
+                SceneObject so = remotePlayers.get(playerId);
+                so.setPosition(newPos);
+            } else {
+                // Create a new scene object for the remote player.
+                SceneObject so = new SceneCube(newPos.getX(), newPos.getY(), newPos.getZ(), 1);
+                remotePlayers.put(playerId, so);
+            }
+        }
+
+        // Optionally, you might remove players that are no longer in the latest update.
+        remotePlayers.keySet().retainAll(latestData.keySet());
+
+        // Aggregate renderables from all remote player scene objects.
         List<Renderable> result = new ArrayList<>();
-        for (SceneObject player : serverConnector.getPlayers()) {
-            result.addAll(player.getRenderables());
+        for (SceneObject so : remotePlayers.values()) {
+            result.addAll(so.getRenderables());
         }
         return result;
     }
 
+    @Override
+    public void move(Vector3 adjustment) {
+
+    }
+
+    @Override
+    public void setPosition(Vector3 pos) {
+
+    }
 }

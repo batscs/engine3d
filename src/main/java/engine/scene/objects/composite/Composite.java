@@ -46,4 +46,18 @@ public class Composite implements SceneObject {
     public void move(Vector3 adjustment) {
         meshes.forEach(mesh -> mesh.move(adjustment));
     }
+
+    @Override
+    public void setPosition(Vector3 pos) {
+        // Calculate the current center of the composite.
+        Vector3 currentCenter = getPosition();
+
+        // For each child object, calculate its offset relative to the composite center,
+        // and then set its position to the new composite position plus that offset.
+        for (SceneObject mesh : meshes) {
+            Vector3 offset = mesh.getPosition().sub(currentCenter);
+            mesh.setPosition(pos.add(offset));
+        }
+    }
+
 }

@@ -32,7 +32,7 @@ public class Server {
                     while (running) {
                         try {
                             broadcastPlayerPositions();
-                            Thread.sleep(20); // 50 updates/sec
+                            Thread.sleep(20); // 50 updates per second
                         } catch (InterruptedException ignored) {}
                     }
                 });
@@ -46,9 +46,11 @@ public class Server {
                     PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true);
                     clientWriters.put(clientSocket, writer);
 
+                    // Send the welcome message with the player's id.
+                    writer.println("WELCOME " + playerId);
                     System.out.println("Player " + playerId + " connected");
 
-                    // Handle player in its own thread
+                    // Handle player in its own thread.
                     Thread clientThread = new Thread(() -> handleClient(clientSocket, playerId));
                     clientThread.setDaemon(true);
                     clientThread.start();
@@ -72,7 +74,6 @@ public class Server {
                         float x = Float.parseFloat(parts[1]);
                         float y = Float.parseFloat(parts[2]);
                         float z = Float.parseFloat(parts[3]);
-
                         players.put(playerId, new Vector3(x, y, z));
                     }
                 }

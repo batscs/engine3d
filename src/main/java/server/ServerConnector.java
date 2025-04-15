@@ -1,25 +1,22 @@
 package server;
 
 import engine.render.Camera;
-import engine.render.Viewport;
 import engine.scene.objects.SceneObject;
 import engine.scene.objects.composite.SceneCube;
-import lombok.Getter;
 import math.Vector3;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ServerConnector {
 
     private final String endpoint;
-    private final Map<Integer, SceneObject> players = new ConcurrentHashMap<>();
+    // Store raw positions received from the server.
+    private final Map<Integer, Vector3> remotePositions = new ConcurrentHashMap<>();
     private final Camera pov;
     private Socket socket;
     private PrintWriter out;
@@ -47,7 +44,6 @@ public class ServerConnector {
 
             running = true;
             startListener();
-
             System.out.println("Connected to server at " + endpoint);
         } catch (Exception e) {
             e.printStackTrace();
@@ -59,50 +55,40 @@ public class ServerConnector {
             try {
                 String line;
                 while (running && (line = in.readLine()) != null) {
-                    if (line.startsWith("UPDATE ")) {
+                    if (line.startsWith("WELCOME ")) {
+                        // Set our own player id based on the welcome message.
+                        ownPlayerId = Integer.parseInt(line.substring(8).trim());
+                        System.out.println("Received welcome message with id " + ownPlayerId);
+                    } else if (line.startsWith("UPDATE ")) {
                         String data = line.substring(7);
                         String[] tokens = data.split(";");
 
-                        // Temp map to track current update's players
-                        Map<Integer, SceneObject> currentPlayers = new ConcurrentHashMap<>();
+                        // Temporary map for the current update's raw positions.
+                        Map<Integer, Vector3> currentPositions = new ConcurrentHashMap<>();
 
                         for (String token : tokens) {
-                            if (token.trim().isEmpty()) continue;
+                            if (token.trim().isEmpty())
+                                continue;
                             String[] parts = token.trim().split("\\s+");
-
                             if (parts.length == 4) {
                                 int id = Integer.parseInt(parts[0]);
+                                // Ignore our own update.
+                                if (id == ownPlayerId) continue;
                                 float x = Float.parseFloat(parts[1]);
                                 float y = Float.parseFloat(parts[2]);
                                 float z = Float.parseFloat(parts[3]);
-
-                                // Identify own ID once by matching initial position
-                                if (ownPlayerId == -1) {
-                                    Vector3 myPos = pov.getPosition();
-                                    if (Math.abs(myPos.getX() - x) < 0.01f &&
-                                            Math.abs(myPos.getY() - y) < 0.01f &&
-                                            Math.abs(myPos.getZ() - z) < 0.01f) {
-                                        ownPlayerId = id;
-                                        continue;
-                                    }
-                                }
-
-                                if (id != ownPlayerId) {
-                                    currentPlayers.put(id, new SceneCube(x, y, z, 1));
-                                }
+                                currentPositions.put(id, new Vector3(x, y, z));
                             }
                         }
-
-                        // Replace previous players map with the updated one
-                        players.clear();
-                        players.putAll(currentPlayers);
+                        // Replace the old raw data with the new update.
+                        remotePositions.clear();
+                        remotePositions.putAll(currentPositions);
                     }
                 }
             } catch (Exception e) {
                 System.err.println("Disconnected from server.");
             }
         });
-
         listenerThread.setDaemon(true);
         listenerThread.start();
     }
@@ -120,11 +106,12 @@ public class ServerConnector {
         running = false;
         try {
             if (socket != null) socket.close();
-        } catch (Exception ignored) {}
-        players.clear();
+        } catch (Exception ignored) { }
+        remotePositions.clear();
     }
 
-    public List<SceneObject> getPlayers() {
-        return new ArrayList<>(players.values());
+    // Returns the latest raw position data from other players.
+    public Map<Integer, Vector3> getRemotePositions() {
+        return remotePositions;
     }
 }

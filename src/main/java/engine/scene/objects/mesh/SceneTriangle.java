@@ -71,6 +71,22 @@ public class SceneTriangle implements SceneObject, Renderable {
         tri.move(adjustment);
     }
 
+    @Override
+    public void setPosition(Vector3 pos) {
+        // Compute the current center of the triangle
+        Vector3 currentCenter = getPosition();
+
+        // For each vertex, compute its offset relative to the current center
+        Vector3 offset0 = tri.v0.sub(currentCenter);
+        Vector3 offset1 = tri.v1.sub(currentCenter);
+        Vector3 offset2 = tri.v2.sub(currentCenter);
+
+        // Set each vertex to the new center plus the original offset
+        tri.v0 = pos.add(offset0);
+        tri.v1 = pos.add(offset1);
+        tri.v2 = pos.add(offset2);
+    }
+
     private Color computeLitColor(Viewport viewport) {
         float r = 0, g = 0, b = 0;
 
@@ -123,6 +139,7 @@ public class SceneTriangle implements SceneObject, Renderable {
 
         return poly;
     }
+
 
 
 }

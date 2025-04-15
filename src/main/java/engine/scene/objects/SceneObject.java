@@ -11,10 +11,12 @@ public interface SceneObject {
 
     Vector3 getPosition();
 
+
+
     List<Renderable> getRenderables();
 
-    default void move(Vector3 adjustment) {
+    void move(Vector3 adjustment);
 
-    }
+    void setPosition(Vector3 pos);
 
 }
