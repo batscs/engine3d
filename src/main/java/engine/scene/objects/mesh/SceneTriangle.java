@@ -1,6 +1,7 @@
 package engine.scene.objects.mesh;
 
 import engine.Settings;
+import engine.render.Camera;
 import engine.scene.objects.Renderable;
 import engine.scene.objects.light.SceneLight;
 import engine.scene.objects.SceneObject;
@@ -11,7 +12,6 @@ import math.Vector3;
 import engine.render.Viewport;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class SceneTriangle implements SceneObject, Renderable {
@@ -35,6 +35,10 @@ public class SceneTriangle implements SceneObject, Renderable {
                 && tri.isBackFacing(viewport.getCamera().position)) return;
 
         Polygon poly = getPolygon(viewport);
+
+        if (poly == null) {
+            return;
+        }
 
         Color finalColor = computeLitColor(viewport);
         viewport.getG2d().setColor(finalColor);
@@ -64,7 +68,7 @@ public class SceneTriangle implements SceneObject, Renderable {
 
     @Override
     public void move(Vector3 adjustment) {
-        tri = tri.add(adjustment);
+        tri.move(adjustment);
     }
 
     private Color computeLitColor(Viewport viewport) {
@@ -91,6 +95,14 @@ public class SceneTriangle implements SceneObject, Renderable {
     }
 
     private Polygon getPolygon(Viewport viewport) {
+        Camera camera = viewport.getCamera();
+        boolean atLeastOneInView =
+                camera.isInView(tri.v0) ||
+                camera.isInView(tri.v1) ||
+                camera.isInView(tri.v2);
+
+        if (!atLeastOneInView) return null;
+
         Matrix4 perspective = viewport.getPerspective();
         Vector3 p0 = perspective.transform(tri.v0);
         Vector3 p1 = perspective.transform(tri.v1);

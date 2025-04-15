@@ -15,10 +15,13 @@ public class Camera {
     @Setter
     public int width, height;
 
+    private float fov;
+
     public Camera(Vector3 position, int width, int height) {
         this.position = position;
         this.width = width;
         this.height = height;
+        this.fov = 70;
     }
 
     public Matrix4 getViewMatrix() {
@@ -35,8 +38,38 @@ public class Camera {
     }
 
     public Matrix4 getPerspectiveMatrix() {
-        Matrix4 projection = Matrix4.perspective(70, width / (float) height, 0.1f, 100f);
+        Matrix4 projection = Matrix4.perspective(fov, width / (float) height, 0.1f, 100f);
         Matrix4 view = getViewMatrix();
         return view.mul(projection);
+    }
+
+    // Camera.java
+    public Vector3 getForwardDirection() {
+        return new Vector3(
+                (float) (Math.cos(pitch) * Math.sin(yaw)),
+                (float) Math.sin(pitch),
+                (float) (Math.cos(pitch) * Math.cos(yaw))
+        ).normalize();
+    }
+
+    // Checks if a point is in front of the camera and within FOV
+    // In Camera.java
+    public boolean isInView(Vector3 point) {
+        Vector3 toPoint = point.sub(position).normalize();
+        Vector3 forward = getForwardDirection();
+
+        // Check if point is in front of the camera (with a small buffer)
+        float dot = toPoint.dot(forward);
+        if (dot < 0.1f) { // Slightly behind the camera? Allow a small buffer (0.1f ≈ 84 degrees)
+            return false;
+        }
+
+        // Check if within FOV + buffer
+        float angleRad = (float) Math.acos(dot);
+        float baseFov = 70f; // Your original FOV
+        float bufferDegrees = 15f; // Expand FOV by 15 degrees for "spielraum"
+        float effectiveFovRad = (float) Math.toRadians((baseFov + bufferDegrees) / 2f);
+
+        return angleRad <= effectiveFovRad;
     }
 }
