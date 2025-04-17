@@ -40,6 +40,7 @@ public class Camera {
     public Matrix4 getPerspectiveMatrix() {
         Matrix4 projection = Matrix4.perspective(fov, width / (float) height, 0.1f, 100f);
         Matrix4 view = getViewMatrix();
+        // view.mul(projection) is fully correct here, also matrix4.perspective() is perfectly working
         return view.mul(projection);
     }
 
@@ -71,5 +72,13 @@ public class Camera {
         float effectiveFovRad = (float) Math.toRadians((baseFov + bufferDegrees) / 2f);
 
         return angleRad <= effectiveFovRad;
+    }
+
+    public Vector3 getRotation() {
+        return new Vector3(
+                (float) Math.toDegrees(pitch),
+                (float) Math.toDegrees(yaw),
+                (float) Math.toDegrees(0)
+        );
     }
 }

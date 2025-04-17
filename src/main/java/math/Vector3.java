@@ -53,13 +53,8 @@ public class Vector3 {
         return new Vector3(-x, -y, -z);
     }
 
-    private float clampToZero(float value, float threshold) {
-        return Math.abs(value) < threshold ? 0f : value;
-    }
-
-    public void move(Vector3 adjustment) {
-        x += clampToZero(adjustment.x, 1e-6f);
-        y += clampToZero(adjustment.y, 1e-6f);
-        z += clampToZero(adjustment.z, 1e-6f);
+    @Override
+    public String toString() {
+        return "(" + x + " " + y + " " + z + ")";
     }
 }

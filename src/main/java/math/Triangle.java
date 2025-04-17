@@ -39,6 +39,30 @@ public class Triangle {
         return tris;
     }
 
+    public static List<Triangle> makeArrow(float x, float y, float z, float bodySize) {
+        List<Triangle> triangles = new ArrayList<>();
+        float hs = bodySize / 2;  // Half size
+        float tipLength = bodySize * 1.5f;
+
+        // Main body (cube)
+        triangles.addAll(makeCube(x, y, z, bodySize));
+
+        // Directional arrow tip (pyramid)
+        Vector3 tipFront = new Vector3(x, y, z + tipLength);
+        Vector3 baseFR = new Vector3(x + hs, y + hs, z + hs);
+        Vector3 baseFL = new Vector3(x - hs, y + hs, z + hs);
+        Vector3 baseBR = new Vector3(x + hs, y - hs, z + hs);
+        Vector3 baseBL = new Vector3(x - hs, y - hs, z + hs);
+
+        // Front-facing triangles
+        triangles.add(new Triangle(baseFR, baseFL, tipFront));
+        triangles.add(new Triangle(baseFL, baseBL, tipFront));
+        triangles.add(new Triangle(baseBL, baseBR, tipFront));
+        triangles.add(new Triangle(baseBR, baseFR, tipFront));
+
+        return triangles;
+    }
+
     public boolean isBackFacing(Vector3 pov) {
         return angle(pov) >= 0;
     }
@@ -68,9 +92,4 @@ public class Triangle {
         return edge1.cross(edge2).normalize();
     }
 
-    public void move(Vector3 adjustment) {
-        v0.move(adjustment);
-        v1.move(adjustment);
-        v2.move(adjustment);
-    }
 }

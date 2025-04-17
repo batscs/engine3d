@@ -17,11 +17,13 @@ public class SceneLight implements SceneObject, Renderable {
     float intensity;
     @Getter
     private Vector3 position;
+    private Vector3 rotation;
 
     public SceneLight(Vector3 position, Color color, float intensity) {
         this.position = position;
         this.color = color;
         this.intensity = intensity;
+        this.rotation = new Vector3(0,0,0);
     }
 
     @Override
@@ -55,11 +57,26 @@ public class SceneLight implements SceneObject, Renderable {
 
     @Override
     public void move(Vector3 adjustment) {
-        position.move(adjustment);
+        position = position.add(adjustment);
     }
 
     @Override
     public void setPosition(Vector3 pos) {
         position = pos;
+    }
+
+    @Override
+    public Vector3 getRotation() {
+        return rotation;
+    }
+
+    @Override
+    public void setRotation(Vector3 rotation) {
+
+    }
+
+    @Override
+    public void rotateAround(Vector3 pivot, Vector3 deltaRotation) {
+
     }
 }

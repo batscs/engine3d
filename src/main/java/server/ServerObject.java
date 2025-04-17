@@ -4,6 +4,7 @@ import engine.render.Camera;
 import engine.scene.objects.Renderable;
 import engine.scene.objects.SceneObject;
 import engine.scene.objects.composite.SceneCube;
+import engine.scene.objects.composite.ScenePlayer;
 import math.Vector3;
 
 import java.util.ArrayList;
@@ -36,20 +37,24 @@ public class ServerObject implements SceneObject {
     @Override
     public List<Renderable> getRenderables() {
         // Get the latest raw position data from the server connector.
-        Map<Integer, Vector3> latestData = serverConnector.getRemotePositions();
+        Map<Integer, PlayerData> latestData = serverConnector.getRemotePositions();
 
         // Update or create remote player scene objects.
-        for (Map.Entry<Integer, Vector3> entry : latestData.entrySet()) {
+        for (Map.Entry<Integer, PlayerData> entry : latestData.entrySet()) {
             int playerId = entry.getKey();
-            Vector3 newPos = entry.getValue();
+            Vector3 newPos = entry.getValue().getPosition();
+            Vector3 newRot = entry.getValue().getRotation();
 
             if (remotePlayers.containsKey(playerId)) {
                 // Calculate adjustment based on the difference between the new and current positions.
                 SceneObject so = remotePlayers.get(playerId);
+                so.setRotation(newRot);
                 so.setPosition(newPos);
             } else {
                 // Create a new scene object for the remote player.
-                SceneObject so = new SceneCube(newPos.getX(), newPos.getY(), newPos.getZ(), 1);
+                SceneObject so = new ScenePlayer();
+                so.setPosition(newPos);
+                so.setRotation(newRot);
                 remotePlayers.put(playerId, so);
             }
         }
@@ -72,6 +77,21 @@ public class ServerObject implements SceneObject {
 
     @Override
     public void setPosition(Vector3 pos) {
+
+    }
+
+    @Override
+    public Vector3 getRotation() {
+        return new Vector3(0, 0, 0);
+    }
+
+    @Override
+    public void setRotation(Vector3 rotation) {
+
+    }
+
+    @Override
+    public void rotateAround(Vector3 pivot, Vector3 deltaRotation) {
 
     }
 }

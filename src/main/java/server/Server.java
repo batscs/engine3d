@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Server {
 
     public static final int PORT = 1111;
-    private final ConcurrentHashMap<Integer, Vector3> players = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, PlayerData> players = new ConcurrentHashMap<>();
     private final Map<Socket, PrintWriter> clientWriters = new ConcurrentHashMap<>();
     private boolean running = false;
     private int playerIdCounter = 0;
@@ -49,7 +49,7 @@ public class Server {
                     // Send the welcome message with the player's id.
                     writer.println("WELCOME " + playerId);
                     System.out.println("Player " + playerId + " connected");
-
+                    players.put(playerId, new PlayerData());
                     // Handle player in its own thread.
                     Thread clientThread = new Thread(() -> handleClient(clientSocket, playerId));
                     clientThread.setDaemon(true);
@@ -70,16 +70,24 @@ public class Server {
             while ((line = in.readLine()) != null) {
                 if (line.startsWith("POS ")) {
                     String[] parts = line.split(" ");
-                    if (parts.length == 4) {
-                        float x = Float.parseFloat(parts[1]);
-                        float y = Float.parseFloat(parts[2]);
-                        float z = Float.parseFloat(parts[3]);
-                        players.put(playerId, new Vector3(x, y, z));
+                    if (parts.length == 7) {
+                        float posX = Float.parseFloat(parts[1]);
+                        float posY = Float.parseFloat(parts[2]);
+                        float posZ = Float.parseFloat(parts[3]);
+
+                        float rotX = Float.parseFloat(parts[4]);
+                        float rotY = Float.parseFloat(parts[5]);
+                        float rotZ = Float.parseFloat(parts[6]);
+
+                        PlayerData data = players.get(playerId);
+                        data.setPosition(new Vector3(posX, posY, posZ));
+                        data.setRotation(new Vector3(rotX, rotY, rotZ));
                     }
                 }
             }
         } catch (Exception e) {
             System.out.println("Player " + playerId + " disconnected");
+            e.printStackTrace();
         } finally {
             players.remove(playerId);
             clientWriters.remove(socket);
@@ -88,11 +96,14 @@ public class Server {
 
     private void broadcastPlayerPositions() {
         StringBuilder sb = new StringBuilder("UPDATE ");
-        players.forEach((id, pos) -> {
+        players.forEach((id, data) -> {
             sb.append(id).append(" ")
-                    .append(pos.getX()).append(" ")
-                    .append(pos.getY()).append(" ")
-                    .append(pos.getZ()).append(";");
+                    .append(data.getPosition().getX()).append(" ")
+                    .append(data.getPosition().getY()).append(" ")
+                    .append(data.getPosition().getZ()).append(" ")
+                    .append(data.getRotation().getX()).append(" ")
+                    .append(data.getRotation().getY()).append(" ")
+                    .append(data.getRotation().getZ()).append(";");
         });
 
         String message = sb.toString();
@@ -106,7 +117,4 @@ public class Server {
         System.out.println("Server stopped.");
     }
 
-    public ConcurrentHashMap<Integer, Vector3> getPlayers() {
-        return players;
-    }
 }

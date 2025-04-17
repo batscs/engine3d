@@ -23,6 +23,8 @@ public class SceneTriangle implements SceneObject, Renderable {
 
     private final Color baseColor;
 
+    private Vector3 rotation = new Vector3(0, 0, 0); // Euler angles in degrees
+
     public SceneTriangle(Triangle tri) {
         this.baseColor = new Color(200, 200, 200);
         this.tri = tri;
@@ -68,7 +70,7 @@ public class SceneTriangle implements SceneObject, Renderable {
 
     @Override
     public void move(Vector3 adjustment) {
-        tri.move(adjustment);
+        tri = tri.add(adjustment);
     }
 
     @Override
@@ -85,6 +87,32 @@ public class SceneTriangle implements SceneObject, Renderable {
         tri.v0 = pos.add(offset0);
         tri.v1 = pos.add(offset1);
         tri.v2 = pos.add(offset2);
+    }
+
+    @Override
+    public Vector3 getRotation() {
+        return rotation;
+    }
+
+    @Override
+    public void setRotation(Vector3 rotation) {
+        Vector3 delta = rotation.sub(this.rotation);
+        this.rotation = rotation;
+        rotateAround(getPosition(), delta);
+    }
+
+    @Override
+    public void rotateAround(Vector3 pivot, Vector3 deltaRotation) {
+        Matrix4 rotMatrix = Matrix4.rotationMatrix(deltaRotation.x, deltaRotation.y, deltaRotation.z);
+        tri.v0 = rotatePoint(pivot, rotMatrix, tri.v0);
+        tri.v1 = rotatePoint(pivot, rotMatrix, tri.v1);
+        tri.v2 = rotatePoint(pivot, rotMatrix, tri.v2);
+    }
+
+    private Vector3 rotatePoint(Vector3 pivot, Matrix4 rotation, Vector3 point) {
+        Vector3 translated = point.sub(pivot);
+        Vector3 rotated = rotation.transform(translated);
+        return rotated.add(pivot);
     }
 
     private Color computeLitColor(Viewport viewport) {
@@ -124,22 +152,15 @@ public class SceneTriangle implements SceneObject, Renderable {
         Vector3 p1 = perspective.transform(tri.v1);
         Vector3 p2 = perspective.transform(tri.v2);
 
-        // Convert from NDC (-1 to 1) to screen coordinates
-        int x0 = (int) ((p0.x + 1) * 0.5f * viewport.getWidth());  // Assuming Renderer.WIDTH exists
+        // Convert NDC to screen coordinates
+        int x0 = (int) ((p0.x + 1) * 0.5f * viewport.getWidth());
         int y0 = (int) ((1 - p0.y) * 0.5f * viewport.getHeight());
         int x1 = (int) ((p1.x + 1) * 0.5f * viewport.getWidth());
         int y1 = (int) ((1 - p1.y) * 0.5f * viewport.getHeight());
         int x2 = (int) ((p2.x + 1) * 0.5f * viewport.getWidth());
         int y2 = (int) ((1 - p2.y) * 0.5f * viewport.getHeight());
 
-        Polygon poly = new Polygon();
-        poly.addPoint(x0, y0);
-        poly.addPoint(x1, y1);
-        poly.addPoint(x2, y2);
-
-        return poly;
+        return new Polygon(new int[]{x0, x1, x2}, new int[]{y0, y1, y2}, 3);
     }
-
-
 
 }

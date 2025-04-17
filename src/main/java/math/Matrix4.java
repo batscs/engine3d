@@ -32,6 +32,38 @@ public class Matrix4 {
         return mat;
     }
 
+    public static Matrix4 rotationMatrix(float xDegrees, float yDegrees, float zDegrees) {
+        float x = (float) Math.toRadians(xDegrees);
+        float y = (float) Math.toRadians(yDegrees);
+        float z = (float) Math.toRadians(zDegrees);
+
+        float cosX = (float) Math.cos(x);
+        float sinX = (float) Math.sin(x);
+        float cosY = (float) Math.cos(y);
+        float sinY = (float) Math.sin(y);
+        float cosZ = (float) Math.cos(z);
+        float sinZ = (float) Math.sin(z);
+
+        Matrix4 mat = new Matrix4();
+
+        // Combined XYZ rotation (applied in Y*X*Z order)
+        mat.m[0][0] = cosY * cosZ + sinX * sinY * sinZ;
+        mat.m[0][1] = -cosY * sinZ + sinX * sinY * cosZ;
+        mat.m[0][2] = cosX * sinY;
+
+        mat.m[1][0] = cosX * sinZ;
+        mat.m[1][1] = cosX * cosZ;
+        mat.m[1][2] = -sinX;
+
+        mat.m[2][0] = -sinY * cosZ + sinX * cosY * sinZ;
+        mat.m[2][1] = sinY * sinZ + sinX * cosY * cosZ;
+        mat.m[2][2] = cosX * cosY;
+
+        mat.m[3][3] = 1f;
+
+        return mat;
+    }
+
     public Matrix4 mul(Matrix4 b) {
         Matrix4 r = new Matrix4();
         for (int row = 0; row < 4; row++) {

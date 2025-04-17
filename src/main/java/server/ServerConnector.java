@@ -16,7 +16,7 @@ public class ServerConnector {
 
     private final String endpoint;
     // Store raw positions received from the server.
-    private final Map<Integer, Vector3> remotePositions = new ConcurrentHashMap<>();
+    private final Map<Integer, PlayerData> remotePositions = new ConcurrentHashMap<>();
     private final Camera pov;
     private Socket socket;
     private PrintWriter out;
@@ -64,20 +64,29 @@ public class ServerConnector {
                         String[] tokens = data.split(";");
 
                         // Temporary map for the current update's raw positions.
-                        Map<Integer, Vector3> currentPositions = new ConcurrentHashMap<>();
+                        Map<Integer, PlayerData> currentPositions = new ConcurrentHashMap<>();
 
                         for (String token : tokens) {
                             if (token.trim().isEmpty())
                                 continue;
                             String[] parts = token.trim().split("\\s+");
-                            if (parts.length == 4) {
+                            if (parts.length == 7) {
                                 int id = Integer.parseInt(parts[0]);
                                 // Ignore our own update.
                                 if (id == ownPlayerId) continue;
-                                float x = Float.parseFloat(parts[1]);
-                                float y = Float.parseFloat(parts[2]);
-                                float z = Float.parseFloat(parts[3]);
-                                currentPositions.put(id, new Vector3(x, y, z));
+                                float posX = Float.parseFloat(parts[1]);
+                                float posY = Float.parseFloat(parts[2]);
+                                float posZ = Float.parseFloat(parts[3]);
+                                float rotX = Float.parseFloat(parts[4]);
+                                float rotY = Float.parseFloat(parts[5]);
+                                float rotZ = Float.parseFloat(parts[6]);
+                                PlayerData playerData = currentPositions.get(id);
+                                if (playerData == null) {
+                                    playerData = new PlayerData();
+                                    currentPositions.put(id, playerData);
+                                }
+                                playerData.setPosition(new Vector3(posX, posY, posZ));
+                                playerData.setRotation(new Vector3(rotX, rotY, rotZ));
                             }
                         }
                         // Replace the old raw data with the new update.
@@ -86,6 +95,7 @@ public class ServerConnector {
                     }
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 System.err.println("Disconnected from server.");
             }
         });
@@ -96,7 +106,9 @@ public class ServerConnector {
     public void tick() {
         if (socket != null && socket.isConnected() && !socket.isClosed()) {
             Vector3 pos = pov.getPosition();
-            String message = "POS " + pos.getX() + " " + pos.getY() + " " + pos.getZ();
+            Vector3 rot = pov.getRotation();
+            String message = "POS " + pos.getX() + " " + pos.getY() + " " + pos.getZ() +
+                    " " + rot.getX() + " " + rot.getY() + " " + rot.getZ();
             out.println(message);
             out.flush();
         }
@@ -111,7 +123,7 @@ public class ServerConnector {
     }
 
     // Returns the latest raw position data from other players.
-    public Map<Integer, Vector3> getRemotePositions() {
+    public Map<Integer, PlayerData> getRemotePositions() {
         return remotePositions;
     }
 }

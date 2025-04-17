@@ -13,12 +13,17 @@ public class Composite implements SceneObject {
 
     private List<? extends SceneObject> meshes;
 
-    public Composite(List<? extends SceneObject> meshes) {
-        if (meshes == null) {
-            throw new IllegalArgumentException("SceneObject Composite Constructor doesn't accept null");
-        }
+    private Vector3 position;
+    private Vector3 rotation = new Vector3(0, 0, 0);
+    private List<Vector3> originalOffsets;
 
+    public Composite(List<? extends SceneObject> meshes) {
         this.meshes = meshes;
+        this.position = calculateAveragePosition();
+        this.originalOffsets = new ArrayList<>();
+        for (SceneObject mesh : meshes) {
+            originalOffsets.add(mesh.getPosition().sub(position));
+        }
     }
 
     @Override
@@ -44,6 +49,7 @@ public class Composite implements SceneObject {
 
     @Override
     public void move(Vector3 adjustment) {
+        //meshes.forEach(mesh -> mesh.setPosition(mesh.getPosition().add(adjustment)));
         meshes.forEach(mesh -> mesh.move(adjustment));
     }
 
@@ -59,5 +65,35 @@ public class Composite implements SceneObject {
             mesh.setPosition(pos.add(offset));
         }
     }
+
+        private Vector3 calculateAveragePosition() {
+            Vector3 sum = new Vector3(0, 0, 0);
+            for (SceneObject mesh : meshes) {
+                sum = sum.add(mesh.getPosition());
+            }
+            return sum.div(meshes.size());
+        }
+
+        @Override
+        public Vector3 getRotation() {
+            return rotation;
+        }
+
+        @Override
+        public void setRotation(Vector3 newRotation) {
+            Vector3 delta = newRotation.sub(rotation);
+            rotation = newRotation;
+            for (SceneObject child : meshes) {
+                child.rotateAround(position, delta);
+            }
+        }
+
+        @Override
+        public void rotateAround(Vector3 pivot, Vector3 deltaRotation) {
+            for (SceneObject child : meshes) {
+                child.rotateAround(pivot, deltaRotation);
+            }
+            // Update own position if necessary (complex, may require additional logic)
+        }
 
 }

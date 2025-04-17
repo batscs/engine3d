@@ -28,6 +28,8 @@ public class ObjectController extends Controller {
         if (getPressedKeys().contains(KeyEvent.VK_L)) object.move(right.mul(speed));        // right
         if (getPressedKeys().contains(KeyEvent.VK_U)) object.move(up.mul(speed));           // up
         if (getPressedKeys().contains(KeyEvent.VK_O)) object.move(up.mul(-speed));          // down
+
+        if (getPressedKeys().contains(KeyEvent.VK_Z)) object.setRotation(object.getRotation().add(new Vector3(0.2f, 0.2f, 0.2f)));
     }
 
 }

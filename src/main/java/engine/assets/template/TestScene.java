@@ -24,7 +24,7 @@ public class TestScene {
         engine.registerController(new ObjectController(cube));
         engine.setScene(scene);
 
-        engine.setCamera(new Vector3(2, 2, 0), -0.5f, -0.2f);
+        engine.setCamera(new Vector3(2, 2, 0), 0f, 0f);
     }
 
 }
