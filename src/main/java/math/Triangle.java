@@ -41,24 +41,25 @@ public class Triangle {
 
     public static List<Triangle> makeArrow(float x, float y, float z, float bodySize) {
         List<Triangle> triangles = new ArrayList<>();
-        float hs = bodySize / 2;  // Half size
-        float tipLength = bodySize * 1.5f;
+        float hs = bodySize * 0.3f;  // Narrower base for the tip
+        float tipLength = bodySize;  // Shorter tip length
 
-        // Main body (cube)
-        triangles.addAll(makeCube(x, y, z, bodySize));
-
-        // Directional arrow tip (pyramid)
+        // Pyramid tip vertices
         Vector3 tipFront = new Vector3(x, y, z + tipLength);
-        Vector3 baseFR = new Vector3(x + hs, y + hs, z + hs);
-        Vector3 baseFL = new Vector3(x - hs, y + hs, z + hs);
-        Vector3 baseBR = new Vector3(x + hs, y - hs, z + hs);
-        Vector3 baseBL = new Vector3(x - hs, y - hs, z + hs);
+        Vector3 baseFR = new Vector3(x + hs, y + hs, z);
+        Vector3 baseFL = new Vector3(x - hs, y + hs, z);
+        Vector3 baseBR = new Vector3(x + hs, y - hs, z);
+        Vector3 baseBL = new Vector3(x - hs, y - hs, z);
 
-        // Front-facing triangles
+        // Front-facing triangles (arrow tip)
         triangles.add(new Triangle(baseFR, baseFL, tipFront));
         triangles.add(new Triangle(baseFL, baseBL, tipFront));
         triangles.add(new Triangle(baseBL, baseBR, tipFront));
         triangles.add(new Triangle(baseBR, baseFR, tipFront));
+
+        // Back-facing triangles (base quad - ensures visibility from behind)
+        triangles.add(new Triangle(baseFL, baseFR, baseBL));  // First half of quad
+        triangles.add(new Triangle(baseFR, baseBR, baseBL));  // Second half of quad
 
         return triangles;
     }

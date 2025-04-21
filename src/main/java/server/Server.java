@@ -1,6 +1,10 @@
 package server;
 
-import math.Vector3;
+import server.protocol.Message;
+import server.message.PositionMessage;
+import server.message.UpdateMessage;
+import server.message.WelcomeMessage;
+import server.protocol.MessageFactory;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -47,7 +51,7 @@ public class Server {
                     clientWriters.put(clientSocket, writer);
 
                     // Send the welcome message with the player's id.
-                    writer.println("WELCOME " + playerId);
+                    writer.println(new WelcomeMessage(playerId).serialize());
                     System.out.println("Player " + playerId + " connected");
                     players.put(playerId, new PlayerData());
                     // Handle player in its own thread.
@@ -68,21 +72,11 @@ public class Server {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
             String line;
             while ((line = in.readLine()) != null) {
-                if (line.startsWith("POS ")) {
-                    String[] parts = line.split(" ");
-                    if (parts.length == 7) {
-                        float posX = Float.parseFloat(parts[1]);
-                        float posY = Float.parseFloat(parts[2]);
-                        float posZ = Float.parseFloat(parts[3]);
-
-                        float rotX = Float.parseFloat(parts[4]);
-                        float rotY = Float.parseFloat(parts[5]);
-                        float rotZ = Float.parseFloat(parts[6]);
-
-                        PlayerData data = players.get(playerId);
-                        data.setPosition(new Vector3(posX, posY, posZ));
-                        data.setRotation(new Vector3(rotX, rotY, rotZ));
-                    }
+                Message msg = MessageFactory.parse(line);
+                if (msg instanceof PositionMessage) {
+                    PositionMessage posMsg = (PositionMessage) msg;
+                    players.get(playerId).setPosition(posMsg.getPosition());
+                    players.get(playerId).setRotation(posMsg.getRotation());
                 }
             }
         } catch (Exception e) {
@@ -95,18 +89,8 @@ public class Server {
     }
 
     private void broadcastPlayerPositions() {
-        StringBuilder sb = new StringBuilder("UPDATE ");
-        players.forEach((id, data) -> {
-            sb.append(id).append(" ")
-                    .append(data.getPosition().getX()).append(" ")
-                    .append(data.getPosition().getY()).append(" ")
-                    .append(data.getPosition().getZ()).append(" ")
-                    .append(data.getRotation().getX()).append(" ")
-                    .append(data.getRotation().getY()).append(" ")
-                    .append(data.getRotation().getZ()).append(";");
-        });
-
-        String message = sb.toString();
+        UpdateMessage updateMsg = new UpdateMessage(players);
+        String message = updateMsg.serialize();
         for (PrintWriter writer : clientWriters.values()) {
             writer.println(message);
         }

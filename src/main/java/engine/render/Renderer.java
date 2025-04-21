@@ -90,7 +90,7 @@ public class Renderer extends Canvas {
         g2d.drawString("Wireframes (F): " + Settings.drawWireframes, 10, 35);
         g2d.drawString("Backfacing (B): " + Settings.allowBackFacing, 10, 50);
 
-        String cam = String.format("(%.2f %.2f %.2f) y:%.2f p:%.2f", camera.position.x, camera.position.y, camera.position.z, camera.yaw, camera.pitch);
+        String cam = camera.getPosition() + " " + camera.getRotation();
         g2d.drawString("Camera: " + cam, 10, 65);
 
         // Draw crosshair.
