@@ -3,6 +3,7 @@ package engine.scene.objects.composite;
 import engine.render.Viewport;
 import engine.scene.objects.Renderable;
 import engine.scene.objects.SceneObject;
+import math.Matrix4;
 import math.Vector3;
 import util.SceneUtil;
 
@@ -11,15 +12,16 @@ import java.util.List;
 
 public class Composite implements SceneObject {
 
-    private List<? extends SceneObject> meshes;
-
+    private final List<? extends SceneObject> meshes;
+    private final List<Vector3> originalOffsets;
     private Vector3 position;
     private Vector3 rotation = new Vector3(0, 0, 0);
-    private List<Vector3> originalOffsets;
 
     public Composite(List<? extends SceneObject> meshes) {
         this.meshes = meshes;
         this.position = calculateAveragePosition();
+
+        // Capture each child’s offset *once* in object‑space
         this.originalOffsets = new ArrayList<>();
         for (SceneObject mesh : meshes) {
             originalOffsets.add(mesh.getPosition().sub(position));
@@ -28,18 +30,12 @@ public class Composite implements SceneObject {
 
     @Override
     public void tick() {
-        meshes.forEach(mesh -> mesh.tick());
-
+        meshes.forEach(SceneObject::tick);
     }
 
     @Override
     public Vector3 getPosition() {
-        Vector3 sum = new Vector3(0, 0, 0);
-        for (SceneObject mesh : meshes) {
-            sum = sum.add(mesh.getPosition());
-        }
-
-        return sum.div(meshes.size());
+        return position;
     }
 
     @Override
@@ -49,51 +45,57 @@ public class Composite implements SceneObject {
 
     @Override
     public void move(Vector3 adjustment) {
-        //meshes.forEach(mesh -> mesh.setPosition(mesh.getPosition().add(adjustment)));
-        meshes.forEach(mesh -> mesh.move(adjustment));
+        setPosition(position.add(adjustment));
     }
 
     @Override
     public void setPosition(Vector3 pos) {
-        // Calculate the current center of the composite.
-        Vector3 currentCenter = getPosition();
+        this.position = pos;
+        updateChildren();
+    }
 
-        // For each child object, calculate its offset relative to the composite center,
-        // and then set its position to the new composite position plus that offset.
-        for (SceneObject mesh : meshes) {
-            Vector3 offset = mesh.getPosition().sub(currentCenter);
-            mesh.setPosition(pos.add(offset));
+    @Override
+    public Vector3 getRotation() {
+        return rotation;
+    }
+
+    @Override
+    public void setRotation(Vector3 newRotation) {
+        this.rotation = newRotation;
+        updateChildren();
+    }
+
+    private void updateChildren() {
+        // Build absolute rotation matrix from Euler (pitch=x, yaw=y)
+        float yawRad   = (float)Math.toRadians(-rotation.y);
+        float pitchRad = (float)Math.toRadians( rotation.x);
+        Matrix4 Ryaw   = Matrix4.rotationAroundAxis(new Vector3(0,1,0), yawRad);
+        Matrix4 Rpitch = Matrix4.rotationAroundAxis(new Vector3(1,0,0), pitchRad);
+        Matrix4 R      = Rpitch.mul(Ryaw);
+
+        // Re‑apply to every child
+        for (int i = 0; i < meshes.size(); i++) {
+            SceneObject child    = meshes.get(i);
+            Vector3   origOffset = originalOffsets.get(i);
+
+            // rotate the stored offset
+            Vector3 rotatedOffset = R.transform(origOffset);
+
+            // position = composite center + rotated offset
+            child.setPosition(position.add(rotatedOffset));
+
+            // let the triangle/cube apply its own rotation logic
+            child.setRotation(rotation);
         }
     }
 
-        private Vector3 calculateAveragePosition() {
-            Vector3 sum = new Vector3(0, 0, 0);
-            for (SceneObject mesh : meshes) {
-                sum = sum.add(mesh.getPosition());
-            }
-            return sum.div(meshes.size());
-        }
 
-        @Override
-        public Vector3 getRotation() {
-            return rotation;
+    private Vector3 calculateAveragePosition() {
+        Vector3 sum = new Vector3(0, 0, 0);
+        for (SceneObject mesh : meshes) {
+            sum = sum.add(mesh.getPosition());
         }
-
-        @Override
-        public void setRotation(Vector3 newRotation) {
-            Vector3 delta = newRotation.sub(rotation);
-            rotation = newRotation;
-            for (SceneObject child : meshes) {
-                child.rotateAround(position, delta);
-            }
-        }
-
-        @Override
-        public void rotateAround(Vector3 pivot, Vector3 deltaRotation) {
-            for (SceneObject child : meshes) {
-                child.rotateAround(pivot, deltaRotation);
-            }
-            // Update own position if necessary (complex, may require additional logic)
-        }
+        return sum.div(meshes.size());
+    }
 
 }

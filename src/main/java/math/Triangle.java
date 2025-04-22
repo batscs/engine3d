@@ -93,4 +93,7 @@ public class Triangle {
         return edge1.cross(edge2).normalize();
     }
 
+    public Triangle copy() {
+        return new Triangle(v0.copy(), v1.copy(), v2.copy());
+    }
 }

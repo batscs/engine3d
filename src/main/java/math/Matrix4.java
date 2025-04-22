@@ -3,6 +3,21 @@ package math;
 public class Matrix4 {
     float[][] m = new float[4][4];
 
+    public Matrix4(float[] values) {
+        if (values.length != 16) {
+            throw new IllegalArgumentException("Matrix4 requires 16 values.");
+        }
+        for (int row = 0; row < 4; row++) {
+            for (int col = 0; col < 4; col++) {
+                m[row][col] = values[row * 4 + col]; // row-major order
+            }
+        }
+    }
+
+    public Matrix4() {
+
+    }
+
     public static Matrix4 perspective(float fovDeg, float aspect, float near, float far) {
         float fovRad = 1f / (float) Math.tan(Math.toRadians(fovDeg) / 2);
         Matrix4 mat = new Matrix4();
@@ -64,6 +79,18 @@ public class Matrix4 {
         return mat;
     }
 
+    public static Matrix4 translate(Vector3 v) {
+        Matrix4 mat = new Matrix4();
+
+        // Identity matrix with translation in last column
+        mat.m[0][0] = 1; mat.m[0][1] = 0; mat.m[0][2] = 0; mat.m[0][3] = 0;
+        mat.m[1][0] = 0; mat.m[1][1] = 1; mat.m[1][2] = 0; mat.m[1][3] = 0;
+        mat.m[2][0] = 0; mat.m[2][1] = 0; mat.m[2][2] = 1; mat.m[2][3] = 0;
+        mat.m[3][0] = v.x; mat.m[3][1] = v.y; mat.m[3][2] = v.z; mat.m[3][3] = 1;
+
+        return mat;
+    }
+
     public Matrix4 mul(Matrix4 b) {
         Matrix4 r = new Matrix4();
         for (int row = 0; row < 4; row++) {
@@ -98,4 +125,29 @@ public class Matrix4 {
         float w = m[3][0] * vec.x + m[3][1] * vec.y + m[3][2] * vec.z + m[3][3] * vec.w;
         return new Vector4(x, y, z, w);
     }
+
+    /**
+     * Constructs a rotation matrix for rotating around an arbitrary axis.
+     *
+     * @param axis     the axis to rotate around (will be normalized)
+     * @param angleRad the angle in radians
+     * @return a 4×4 rotation matrix
+     */
+    public static Matrix4 rotationAroundAxis(Vector3 axis, float angleRad) {
+        axis = axis.normalize();
+        float x = axis.x, y = axis.y, z = axis.z;
+        float c = (float)Math.cos(angleRad);
+        float s = (float)Math.sin(angleRad);
+        float t = 1 - c;
+
+        // row‑major 4×4
+        float[] m = new float[] {
+                t*x*x + c,    t*x*y - s*z,  t*x*z + s*y,  0,
+                t*x*y + s*z,  t*y*y + c,    t*y*z - s*x,  0,
+                t*x*z - s*y,  t*y*z + s*x,  t*z*z + c,    0,
+                0,            0,            0,            1
+        };
+        return new Matrix4(m);
+    }
+
 }

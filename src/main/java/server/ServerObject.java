@@ -89,9 +89,4 @@ public class ServerObject implements SceneObject {
     public void setRotation(Vector3 rotation) {
 
     }
-
-    @Override
-    public void rotateAround(Vector3 pivot, Vector3 deltaRotation) {
-
-    }
 }

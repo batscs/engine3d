@@ -16,18 +16,19 @@ import java.util.List;
 
 public class SceneTriangle implements SceneObject, Renderable {
 
-    private Triangle tri;
+    private final Triangle originalTri;  // <-- store the pristine geometry
+    private Triangle tri;                // <-- this is what we draw
 
-    @Setter
-    private boolean allowBackFacing = false;
-
+    @Setter private boolean allowBackFacing = false;
     private final Color baseColor;
-
-    private Vector3 rotation = new Vector3(0, 0, 0); // Euler angles in degrees
+    private Vector3 rotation = new Vector3(0,0,0);
+    private Vector3 position = new Vector3(0,0,0);
 
     public SceneTriangle(Triangle tri) {
-        this.baseColor = new Color(200, 200, 200);
-        this.tri = tri;
+        this.baseColor    = new Color(200,200,200);
+        this.originalTri  = tri.copy();    // deep‐copy the input
+        this.tri          = tri.copy();    // our “working” copy
+        this.position     = this.tri.center();
     }
 
     @Override
@@ -60,7 +61,7 @@ public class SceneTriangle implements SceneObject, Renderable {
 
     @Override
     public Vector3 getPosition() {
-        return tri.center();
+        return position;
     }
 
     @Override
@@ -74,19 +75,9 @@ public class SceneTriangle implements SceneObject, Renderable {
     }
 
     @Override
-    public void setPosition(Vector3 pos) {
-        // Compute the current center of the triangle
-        Vector3 currentCenter = getPosition();
-
-        // For each vertex, compute its offset relative to the current center
-        Vector3 offset0 = tri.v0.sub(currentCenter);
-        Vector3 offset1 = tri.v1.sub(currentCenter);
-        Vector3 offset2 = tri.v2.sub(currentCenter);
-
-        // Set each vertex to the new center plus the original offset
-        tri.v0 = pos.add(offset0);
-        tri.v1 = pos.add(offset1);
-        tri.v2 = pos.add(offset2);
+    public void setPosition(Vector3 newPos) {
+        this.position = newPos;
+        rebuild();    // reapply rotation & translation in one go
     }
 
     @Override
@@ -95,18 +86,9 @@ public class SceneTriangle implements SceneObject, Renderable {
     }
 
     @Override
-    public void setRotation(Vector3 rotation) {
-        Vector3 delta = rotation.sub(this.rotation);
-        this.rotation = rotation;
-        rotateAround(getPosition(), delta);
-    }
-
-    @Override
-    public void rotateAround(Vector3 pivot, Vector3 deltaRotation) {
-        Matrix4 rotMatrix = Matrix4.rotationMatrix(deltaRotation.x, deltaRotation.y, deltaRotation.z);
-        tri.v0 = rotatePoint(pivot, rotMatrix, tri.v0);
-        tri.v1 = rotatePoint(pivot, rotMatrix, tri.v1);
-        tri.v2 = rotatePoint(pivot, rotMatrix, tri.v2);
+    public void setRotation(Vector3 rotationDeg) {
+        this.rotation = rotationDeg;
+        rebuild();
     }
 
     private Vector3 rotatePoint(Vector3 pivot, Matrix4 rotation, Vector3 point) {
@@ -142,8 +124,8 @@ public class SceneTriangle implements SceneObject, Renderable {
         Camera camera = viewport.getCamera();
         boolean atLeastOneInView =
                 camera.isInView(tri.v0) ||
-                camera.isInView(tri.v1) ||
-                camera.isInView(tri.v2);
+                        camera.isInView(tri.v1) ||
+                        camera.isInView(tri.v2);
 
         if (!atLeastOneInView) return null;
 
@@ -161,6 +143,42 @@ public class SceneTriangle implements SceneObject, Renderable {
         int y2 = (int) ((1 - p2.y) * 0.5f * viewport.getHeight());
 
         return new Polygon(new int[]{x0, x1, x2}, new int[]{y0, y1, y2}, 3);
+    }
+
+    private void rebuild() {
+        // TODO somehow only rebuild not twice if setPosition and setRotation called
+
+        // 1) local center of the original
+        Vector3 c = originalTri.center();
+
+        // 2) build axis‑angle mats
+        float yawRad   = (float)Math.toRadians(-rotation.y);
+        float pitchRad = (float)Math.toRadians( rotation.x);
+
+        Matrix4 T1     = Matrix4.translate(c.negate());
+        Matrix4 Ryaw   = Matrix4.rotationAroundAxis(new Vector3(0,1,0), yawRad);
+        Matrix4 Rpitch = Matrix4.rotationAroundAxis(new Vector3(1,0,0), pitchRad);
+        Matrix4 T2     = Matrix4.translate(c);
+
+        // rotation around center
+        Matrix4 R      = T2.mul(Rpitch).mul(Ryaw).mul(T1);
+
+        // 3) apply rotation
+        Vector3 v0r = R.transform(originalTri.v0);
+        Vector3 v1r = R.transform(originalTri.v1);
+        Vector3 v2r = R.transform(originalTri.v2);
+
+        Triangle t = new Triangle(v0r, v1r, v2r);
+
+        // 4) now translate so that the new center == `position`
+        Vector3 newCenter = t.center();
+        Vector3 delta     = position.sub(newCenter);
+
+        this.tri = new Triangle(
+                v0r.add(delta),
+                v1r.add(delta),
+                v2r.add(delta)
+        );
     }
 
 }

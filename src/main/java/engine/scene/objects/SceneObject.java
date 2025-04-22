@@ -19,6 +19,5 @@ public interface SceneObject {
 
     Vector3 getRotation();
     void setRotation(Vector3 rotation);
-    void rotateAround(Vector3 pivot, Vector3 deltaRotation);
 
 }
