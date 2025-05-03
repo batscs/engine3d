@@ -20,11 +20,15 @@ public class SceneTriangle implements SceneObject, Renderable {
     private Triangle tri;                // <-- this is what we draw
 
     @Setter private boolean allowBackFacing = false;
-    private final Color baseColor;
+    @Setter private Color baseColor;
     private Vector3 rotation = new Vector3(0,0,0);
     private Vector3 position = new Vector3(0,0,0);
 
     public SceneTriangle(Triangle tri) {
+        this(tri, new Color(200, 200, 200));
+    }
+
+    public SceneTriangle(Triangle tri, Color baseColor) {
         this.baseColor    = new Color(200,200,200);
         this.originalTri  = tri.copy();    // deep‐copy the input
         this.tri          = tri.copy();    // our “working” copy
@@ -98,6 +102,20 @@ public class SceneTriangle implements SceneObject, Renderable {
     }
 
     private Color computeLitColor(Viewport viewport) {
+        if (!Settings.useDynamicLighting) {
+            Vector3 camPos = viewport.getCamera().position;
+            Vector3 viewDir = tri.center().sub(camPos).normalize();
+            Vector3 normal = tri.normal().normalize();
+
+            float intensity = Math.max(0.2f, -normal.dot(viewDir));  // keep at least 0.2 to avoid total black
+
+            int r = (int)(baseColor.getRed()   * intensity);
+            int g = (int)(baseColor.getGreen() * intensity);
+            int b = (int)(baseColor.getBlue()  * intensity);
+
+            return new Color(clamp(r), clamp(g), clamp(b));
+        }
+
         float r = 0, g = 0, b = 0;
 
         for (SceneLight light : viewport.getScene().getLights()) {
@@ -181,4 +199,11 @@ public class SceneTriangle implements SceneObject, Renderable {
         );
     }
 
+    public void setBaseColor(Color color) {
+        this.baseColor = color;
+    }
+
+    private int clamp(int val) {
+        return Math.min(255, Math.max(0, val));
+    }
 }

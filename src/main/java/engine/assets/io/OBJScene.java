@@ -12,6 +12,7 @@ import math.Vector3;
 
 import java.awt.*;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -19,10 +20,45 @@ import java.util.List;
 
 public class OBJScene {
 
+    private static class Material {
+        public Color diffuseColor = new Color(200, 200, 200);
+        public String name = "";
+    }
+
+    private static Map<String, Material> loadMaterials(String mtlPath) throws IOException {
+        Map<String, Material> materials = new HashMap<>();
+        Material current = null;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(mtlPath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (line.startsWith("newmtl ")) {
+                    current = new Material();
+                    current.name = line.substring(7);
+                    materials.put(current.name, current);
+                } else if (line.startsWith("Kd ")) {
+                    if (current != null) {
+                        String[] parts = line.split("\\s+");
+                        current.diffuseColor = new Color(
+                                (int) (Float.parseFloat(parts[1]) * 255),
+                                (int) (Float.parseFloat(parts[2]) * 255),
+                                (int) (Float.parseFloat(parts[3]) * 255)
+                        );
+                    }
+                }
+            }
+        }
+        return materials;
+    }
+
     public static void build(Engine engine, String path) throws IOException {
         Scene scene = new Scene();
         List<Vector3> vertices = new ArrayList<>();
         List<SceneObject> faces = new ArrayList<>();
+        Map<String, Material> materials = new HashMap<>();
+        Material currentMaterial = new Material();
+        String baseDir = new File(path).getParent();
 
         boolean controllable = false;
 
@@ -39,6 +75,14 @@ public class OBJScene {
                     float y = Float.parseFloat(tokens[2]);
                     float z = Float.parseFloat(tokens[3]);
                     vertices.add(new Vector3(x, y, z));
+                }
+                else if (line.startsWith("mtllib ")) {
+                    String mtlFile = line.substring(7);
+                    materials = loadMaterials(baseDir + File.separator + mtlFile);
+                }
+                else if (line.startsWith("usemtl ")) {
+                    String mtlName = line.substring(7);
+                    currentMaterial = materials.getOrDefault(mtlName, new Material());
                 }
                 // Parsing faces (f)
                 else if (line.startsWith("f ")) {
@@ -57,7 +101,9 @@ public class OBJScene {
                         faceVerts.add(vertices.get(vertexIndex));
                     }
 
-                    faces.add(new ScenePolygon(faceVerts));
+                    ScenePolygon scenePolygon = new ScenePolygon(faceVerts);
+                    scenePolygon.setBaseColor(currentMaterial.diffuseColor);
+                    faces.add(scenePolygon);
                 }
                 // Parsing lights (l)
                 else if (line.startsWith("l ")) {

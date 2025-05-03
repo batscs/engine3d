@@ -79,7 +79,9 @@ public class Renderer extends Canvas {
         }
 
         // Draw Heads-Up Display.
-        drawHud(g2d);
+        if (Settings.drawHud) {
+            drawHud(g2d);
+        }
     }
 
     private void drawHud(Graphics2D g2d) {
@@ -89,9 +91,7 @@ public class Renderer extends Canvas {
         g2d.drawString("FPS: " + (int) (1 / Settings.deltaTime), 10, 20);
         g2d.drawString("Wireframes (F): " + Settings.drawWireframes, 10, 35);
         g2d.drawString("Backfacing (B): " + Settings.allowBackFacing, 10, 50);
-
-        String cam = camera.getPosition() + " " + camera.getRotation();
-        g2d.drawString("Camera: " + cam, 10, 65);
+        g2d.drawString("DynamicLighting (C): " + Settings.useDynamicLighting, 10, 65);
 
         // Draw crosshair.
         int crosshairSize = 10;

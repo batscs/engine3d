@@ -1,5 +1,6 @@
 package engine.scene.objects.light;
 
+import engine.Settings;
 import engine.scene.objects.Renderable;
 import engine.scene.objects.SceneObject;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import engine.render.Viewport;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Set;
 
 public class SceneLight implements SceneObject, Renderable {
 
@@ -28,6 +30,10 @@ public class SceneLight implements SceneObject, Renderable {
 
     @Override
     public void draw(Viewport viewport) {
+        if (!Settings.useDynamicLighting) {
+            return;
+        }
+
         Vector3 lightProj = viewport.getPerspective().transform(position);
         int x = (int) ((lightProj.x + 1) * 0.5f * viewport.getWidth());
         int y = (int) ((1 - (lightProj.y + 1) * 0.5f) * viewport.getHeight());

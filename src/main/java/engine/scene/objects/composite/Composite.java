@@ -3,6 +3,7 @@ package engine.scene.objects.composite;
 import engine.render.Viewport;
 import engine.scene.objects.Renderable;
 import engine.scene.objects.SceneObject;
+import engine.scene.objects.mesh.SceneTriangle;
 import math.Matrix4;
 import math.Vector3;
 import util.SceneUtil;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class Composite implements SceneObject {
 
-    private final List<? extends SceneObject> meshes;
+    final List<? extends SceneObject> meshes;
     private final List<Vector3> originalOffsets;
     private Vector3 position;
     private Vector3 rotation = new Vector3(0, 0, 0);

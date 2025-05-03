@@ -1,8 +1,5 @@
 package math;
 
-import engine.render.Viewport;
-
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,7 +74,7 @@ public class Triangle {
     }
 
     public float angle(Vector3 direction) {
-        Vector3 normal = calculateNormal();
+        Vector3 normal = normal();
         Vector3 camDirection = v0.sub(direction).normalize();
 
         return normal.dot(camDirection);
@@ -87,7 +84,7 @@ public class Triangle {
         return v0.add(v1).add(v2).div(3);
     }
 
-    public Vector3 calculateNormal() {
+    public Vector3 normal() {
         Vector3 edge1 = v1.sub(v0);
         Vector3 edge2 = v2.sub(v0);
         return edge1.cross(edge2).normalize();

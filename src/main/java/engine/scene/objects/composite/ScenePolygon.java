@@ -4,10 +4,12 @@ import engine.scene.objects.mesh.SceneTriangle;
 import math.Triangle;
 import math.Vector3;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ScenePolygon extends Composite {
+
 
     public ScenePolygon(List<Vector3> vertices) {
         super(triangulate(vertices));
@@ -25,5 +27,12 @@ public class ScenePolygon extends Composite {
         }
 
         return triangles;
+    }
+
+    public void setBaseColor(Color color) {
+        super.meshes.forEach(sceneObject -> {
+            SceneTriangle triangle = (SceneTriangle) sceneObject;
+            triangle.setBaseColor(color);
+        });
     }
 }
