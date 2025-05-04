@@ -7,5 +7,6 @@ public class Settings {
     public static boolean useDynamicLighting = true;
     public static boolean drawHud = true;
     public static float deltaTime = 0f;
+    public static int enginePolygons = -1;
 
 }

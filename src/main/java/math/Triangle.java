@@ -61,10 +61,6 @@ public class Triangle {
         return triangles;
     }
 
-    public boolean isBackFacing(Vector3 pov) {
-        return angle(pov) >= 0;
-    }
-
     public Triangle add(Vector3 adjustment) {
         return new Triangle(
             v0.add(adjustment),

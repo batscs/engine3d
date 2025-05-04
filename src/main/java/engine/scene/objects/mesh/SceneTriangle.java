@@ -19,7 +19,6 @@ public class SceneTriangle implements SceneObject, Renderable {
     private final Triangle originalTri;  // <-- store the pristine geometry
     private Triangle tri;                // <-- this is what we draw
 
-    @Setter private boolean allowBackFacing = false;
     @Setter private Color baseColor;
     private Vector3 rotation = new Vector3(0,0,0);
     private Vector3 position = new Vector3(0,0,0);
@@ -37,10 +36,6 @@ public class SceneTriangle implements SceneObject, Renderable {
 
     @Override
     public void draw(Viewport viewport) {
-        if (!allowBackFacing
-                && !Settings.allowBackFacing
-                && tri.isBackFacing(viewport.getCamera().position)) return;
-
         Polygon poly = getPolygon(viewport);
 
         if (poly == null) {
@@ -55,6 +50,11 @@ public class SceneTriangle implements SceneObject, Renderable {
         } else {
             viewport.getG2d().fillPolygon(poly);
         }
+    }
+
+    @Override
+    public boolean isVisible(Viewport viewport) {
+        return Settings.allowBackFacing || !viewport.isBackFacing(tri);
     }
 
 

@@ -3,6 +3,8 @@ package engine.render;
 import engine.scene.Scene;
 import lombok.Getter;
 import math.Matrix4;
+import math.Triangle;
+import math.Vector3;
 
 import java.awt.*;
 
@@ -30,5 +32,9 @@ public class Viewport {
 
     public int getHeight() {
         return camera.height;
+    }
+
+    public boolean isBackFacing(Triangle tri) {
+        return tri.angle(camera.position) >= 0;
     }
 }

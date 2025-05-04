@@ -30,10 +30,6 @@ public class SceneLight implements SceneObject, Renderable {
 
     @Override
     public void draw(Viewport viewport) {
-        if (!Settings.useDynamicLighting) {
-            return;
-        }
-
         Vector3 lightProj = viewport.getPerspective().transform(position);
         int x = (int) ((lightProj.x + 1) * 0.5f * viewport.getWidth());
         int y = (int) ((1 - (lightProj.y + 1) * 0.5f) * viewport.getHeight());
@@ -48,6 +44,11 @@ public class SceneLight implements SceneObject, Renderable {
         viewport.getG2d().fillOval(x - size / 2, y - size / 2, size, size);
         viewport.getG2d().setColor(Color.BLACK);
         viewport.getG2d().drawOval(x - size / 2, y - size / 2, size, size);
+    }
+
+    @Override
+    public boolean isVisible(Viewport viewport) {
+        return Settings.useDynamicLighting;
     }
 
     @Override

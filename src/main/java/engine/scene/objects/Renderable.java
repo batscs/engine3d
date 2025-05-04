@@ -7,6 +7,8 @@ public interface Renderable {
 
     void draw(Viewport viewport);
 
+    boolean isVisible(Viewport viewport);
+
     Vector3 getPosition();
 
 }

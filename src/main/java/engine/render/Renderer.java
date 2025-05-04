@@ -74,7 +74,8 @@ public class Renderer extends Canvas {
         g.fillRect(0, 0, width, height);
 
         // Draw all scene objects (sorted by distance if needed).
-        for (Renderable obj : scene.getAllRenderablesByDistance(camera.position)) {
+        //for (Renderable obj : scene.getAllRenderablesByDistance(camera.position)) {
+        for (Renderable obj : scene.getAllRenderable(viewport)) {
             obj.draw(viewport);
         }
 
@@ -89,9 +90,10 @@ public class Renderer extends Canvas {
         g2d.setColor(Color.BLACK);
         g2d.setFont(new Font("Arial", Font.PLAIN, 16));
         g2d.drawString("FPS: " + (int) (1 / Settings.deltaTime), 10, 20);
-        g2d.drawString("Wireframes (F): " + Settings.drawWireframes, 10, 35);
-        g2d.drawString("Backfacing (B): " + Settings.allowBackFacing, 10, 50);
-        g2d.drawString("DynamicLighting (C): " + Settings.useDynamicLighting, 10, 65);
+        g2d.drawString("Polygons: " + Settings.enginePolygons, 10, 35);
+        g2d.drawString("Wireframes (F): " + Settings.drawWireframes, 10, 50);
+        g2d.drawString("Backfacing (B): " + Settings.allowBackFacing, 10, 65);
+        g2d.drawString("DynamicLighting (C): " + Settings.useDynamicLighting, 10, 80);
 
         // Draw crosshair.
         int crosshairSize = 10;
