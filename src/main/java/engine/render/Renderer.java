@@ -5,10 +5,12 @@ import engine.scene.Scene;
 import engine.scene.objects.Renderable;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 import math.Vector3;
 
@@ -75,9 +77,14 @@ public class Renderer extends Canvas {
 
         // Draw all scene objects (sorted by distance if needed).
         //for (Renderable obj : scene.getAllRenderablesByDistance(camera.position)) {
-        for (Renderable obj : scene.getAllRenderable(viewport)) {
+        List<Renderable> renderables = scene.getAllRenderable(viewport);
+        long startDraw = System.nanoTime();
+        for (Renderable obj : renderables) {
             obj.draw(viewport);
         }
+        long endDraw = System.nanoTime();
+        System.out.printf("Drawing: %.9f seconds%n", (endDraw - startDraw) / 1_000_000_000.0);
+
 
         // Draw Heads-Up Display.
         if (Settings.drawHud) {
@@ -94,6 +101,7 @@ public class Renderer extends Canvas {
         g2d.drawString("Wireframes (F): " + Settings.drawWireframes, 10, 50);
         g2d.drawString("Backfacing (B): " + Settings.allowBackFacing, 10, 65);
         g2d.drawString("DynamicLighting (C): " + Settings.useDynamicLighting, 10, 80);
+        g2d.drawString("DepthBuffering (V): " + Settings.useDepthBuffer, 10, 95);
 
         // Draw crosshair.
         int crosshairSize = 10;

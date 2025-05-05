@@ -43,6 +43,7 @@ public class CameraController extends Controller {
         if (getReleasedKeys().contains(KeyEvent.VK_F)) Settings.drawWireframes = !Settings.drawWireframes;
         if (getReleasedKeys().contains(KeyEvent.VK_B)) Settings.allowBackFacing = !Settings.allowBackFacing;
         if (getReleasedKeys().contains(KeyEvent.VK_C)) Settings.useDynamicLighting = !Settings.useDynamicLighting;
+        if (getReleasedKeys().contains(KeyEvent.VK_V)) Settings.useDepthBuffer = !Settings.useDepthBuffer;
         if (getReleasedKeys().contains(KeyEvent.VK_F12)) Settings.drawHud = !Settings.drawHud;
 
         camera.pitch = Math.max(-1.55f, Math.min(1.55f, camera.pitch));

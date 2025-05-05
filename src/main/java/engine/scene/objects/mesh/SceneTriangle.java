@@ -5,6 +5,7 @@ import engine.render.Camera;
 import engine.scene.objects.Renderable;
 import engine.scene.objects.light.SceneLight;
 import engine.scene.objects.SceneObject;
+import lombok.Getter;
 import lombok.Setter;
 import math.Matrix4;
 import math.Triangle;
@@ -16,9 +17,9 @@ import java.util.List;
 
 public class SceneTriangle implements SceneObject, Renderable {
 
-    private final Triangle originalTri;  // <-- store the pristine geometry
-    private Triangle tri;                // <-- this is what we draw
-
+    private final Triangle originalTri;
+    @Getter
+    private Triangle tri;
     @Setter private Color baseColor;
     private Vector3 rotation = new Vector3(0,0,0);
     private Vector3 position = new Vector3(0,0,0);
@@ -138,7 +139,7 @@ public class SceneTriangle implements SceneObject, Renderable {
         return new Color(r, g, b);
     }
 
-    private Polygon getPolygon(Viewport viewport) {
+    public Polygon getPolygon(Viewport viewport) {
         Camera camera = viewport.getCamera();
         boolean atLeastOneInView =
                 camera.isInView(tri.v0) ||
