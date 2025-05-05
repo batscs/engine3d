@@ -30,8 +30,8 @@ public class Renderer extends Canvas {
     @Getter
     private BufferedImage frame;
 
-    @Getter
-    private JFrame window;
+    private long lastFpsUpdateTime = 0;
+    private int displayedFps = 0;
 
     public Renderer(Scene scene, int width, int height) {
         this.width = width;
@@ -89,10 +89,15 @@ public class Renderer extends Canvas {
     }
 
     private void drawHud(Graphics2D g2d) {
-        // For simplicity, we assume a constant FPS display here.
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastFpsUpdateTime >= 500) {
+            displayedFps = (int) (1 / Settings.deltaTime);
+            lastFpsUpdateTime = currentTime;
+        }
+
         g2d.setColor(Color.BLACK);
         g2d.setFont(new Font("Arial", Font.PLAIN, 16));
-        g2d.drawString("FPS: " + (int) (1 / Settings.deltaTime), 10, 20);
+        g2d.drawString("FPS: " + displayedFps, 10, 20);
         g2d.drawString("Polygons: " + Settings.enginePolygons, 10, 35);
         g2d.drawString("Wireframes (F): " + Settings.drawWireframes, 10, 50);
         g2d.drawString("Backfacing (B): " + Settings.allowBackFacing, 10, 65);

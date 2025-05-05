@@ -128,11 +128,4 @@ public class DepthBuffer {
         return (w0*s.z0 + w1*s.z1 + w2*s.z2) / sum;
     }
 
-    private static float min3(float a, float b, float c) {
-        return Math.min(a, Math.min(b, c));
-    }
-    private static float max3(float a, float b, float c) {
-        return Math.max(a, Math.max(b, c));
-    }
-
 }
