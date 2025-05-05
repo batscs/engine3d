@@ -57,42 +57,26 @@ public class Scene {
     }
 
     public List<Renderable> getAllRenderable(Viewport viewport) {
-        long startTotal = System.nanoTime();
 
-        long startCollect = System.nanoTime();
         List<Renderable> result = new ArrayList<>();
         List<Renderable> temp = new ArrayList<>();
         for (SceneObject obj : objects) {
             temp.addAll(obj.getRenderables());
         }
-        long endCollect = System.nanoTime();
-        System.out.printf("Collecting renderables: %.9f seconds%n", (endCollect - startCollect) / 1_000_000_000.0);
 
-        long startVisibility = System.nanoTime();
         for (Renderable renderable : temp) {
             if (renderable.isVisible(viewport)) {
                 result.add(renderable);
             }
         }
-        long endVisibility = System.nanoTime();
-        System.out.printf("Visibility check: %.9f seconds%n", (endVisibility - startVisibility) / 1_000_000_000.0);
 
-        long startSort = System.nanoTime();
         List<Renderable> sorted = SceneUtil.sortByDistance(result, viewport.getCamera().position);
-        long endSort = System.nanoTime();
-        System.out.printf("Sorting by distance: %.9f seconds%n", (endSort - startSort) / 1_000_000_000.0);
 
-        long startCull = System.nanoTime();
         if (Settings.useDepthBuffer) {
             sorted = engine.render.util.DepthBuffer.cull(sorted, viewport);
         }
-        long endCull = System.nanoTime();
-        System.out.printf("Depth buffer culling: %.9f seconds%n", (endCull - startCull) / 1_000_000_000.0);
 
         Settings.enginePolygons = sorted.size();
-
-        long endTotal = System.nanoTime();
-        System.out.printf("Total getAllRenderable time: %.9f seconds%n", (endTotal - startTotal) / 1_000_000_000.0);
 
         return sorted;
     }

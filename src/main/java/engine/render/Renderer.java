@@ -78,13 +78,9 @@ public class Renderer extends Canvas {
         // Draw all scene objects (sorted by distance if needed).
         //for (Renderable obj : scene.getAllRenderablesByDistance(camera.position)) {
         List<Renderable> renderables = scene.getAllRenderable(viewport);
-        long startDraw = System.nanoTime();
         for (Renderable obj : renderables) {
             obj.draw(viewport);
         }
-        long endDraw = System.nanoTime();
-        System.out.printf("Drawing: %.9f seconds%n", (endDraw - startDraw) / 1_000_000_000.0);
-
 
         // Draw Heads-Up Display.
         if (Settings.drawHud) {
