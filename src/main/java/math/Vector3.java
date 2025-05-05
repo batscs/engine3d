@@ -12,6 +12,10 @@ public class Vector3 {
         return (float)Math.sqrt(x * x + y * y + z * z);
     }
 
+    public float lengthSquared() {
+        return x * x + y * y + z * z;
+    }
+
     public Vector3 normalize() {
         float len = length();
         return new Vector3(x / len, y / len, z / len);

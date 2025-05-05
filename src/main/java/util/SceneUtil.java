@@ -13,8 +13,8 @@ public class SceneUtil {
         List<Renderable> result = new ArrayList<>(os);
 
         result.sort((a, b) -> {
-            float distA = a.getPosition().sub(position).length();
-            float distB = b.getPosition().sub(position).length();
+            float distA = a.getPosition().sub(position).lengthSquared();
+            float distB = b.getPosition().sub(position).lengthSquared();
             return Float.compare(distB, distA);
         });
 

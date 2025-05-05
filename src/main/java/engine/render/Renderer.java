@@ -10,11 +10,11 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
+import java.text.DecimalFormat;
 import java.util.List;
 
 import math.Vector3;
 
-import javax.swing.*;
 
 public class Renderer extends Canvas {
 
@@ -31,7 +31,7 @@ public class Renderer extends Canvas {
     private BufferedImage frame;
 
     private long lastFpsUpdateTime = 0;
-    private int displayedFps = 0;
+    private float displayedFps = 0;
 
     public Renderer(Scene scene, int width, int height) {
         this.width = width;
@@ -78,9 +78,13 @@ public class Renderer extends Canvas {
         // Draw all scene objects (sorted by distance if needed).
         //for (Renderable obj : scene.getAllRenderablesByDistance(camera.position)) {
         List<Renderable> renderables = scene.getAllRenderable(viewport);
+        long start = System.nanoTime();
         for (Renderable obj : renderables) {
             obj.draw(viewport);
         }
+        long end = System.nanoTime();
+        System.out.printf("Step 6 - Draw polygons: %.6f seconds%n", (end - start) / 1_000_000_000.0);
+
 
         // Draw Heads-Up Display.
         if (Settings.drawHud) {
@@ -88,16 +92,21 @@ public class Renderer extends Canvas {
         }
     }
 
+    private static final DecimalFormat dfLow = new DecimalFormat("0.00");
+    private static final DecimalFormat dfHigh = new DecimalFormat("0.");
+
     private void drawHud(Graphics2D g2d) {
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastFpsUpdateTime >= 500) {
-            displayedFps = (int) (1 / Settings.deltaTime);
+            displayedFps = (1 / Settings.deltaTime);
             lastFpsUpdateTime = currentTime;
         }
 
+        String fps = displayedFps < 20 ? dfLow.format(displayedFps) : dfHigh.format(displayedFps);
+
         g2d.setColor(Color.BLACK);
         g2d.setFont(new Font("Arial", Font.PLAIN, 16));
-        g2d.drawString("FPS: " + displayedFps, 10, 20);
+        g2d.drawString("FPS: " + fps, 10, 20);
         g2d.drawString("Polygons: " + Settings.enginePolygons, 10, 35);
         g2d.drawString("Wireframes (F): " + Settings.drawWireframes, 10, 50);
         g2d.drawString("Backfacing (B): " + Settings.allowBackFacing, 10, 65);

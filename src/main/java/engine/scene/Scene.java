@@ -2,6 +2,7 @@ package engine.scene;
 
 import engine.Settings;
 import engine.render.Viewport;
+import engine.render.util.DepthBuffer;
 import engine.scene.objects.Renderable;
 import engine.scene.objects.light.SceneLight;
 import engine.scene.objects.SceneObject;
@@ -56,29 +57,60 @@ public class Scene {
         return result;
     }
 
-    public List<Renderable> getAllRenderable(Viewport viewport) {
+    private final List<Renderable> cacheRenderables = new ArrayList<>();
 
-        List<Renderable> result = new ArrayList<>();
-        List<Renderable> temp = new ArrayList<>();
-        for (SceneObject obj : objects) {
-            temp.addAll(obj.getRenderables());
+    private int lastCache = -1;
+
+    private List<Renderable> getCachedRenderables() {
+        if (objects != null && objects.hashCode() != lastCache) {
+            lastCache = objects.hashCode();
+            cacheRenderables.clear();
+            for (SceneObject obj : objects) {
+                cacheRenderables.addAll(obj.getRenderables());
+            }
         }
 
-        for (Renderable renderable : temp) {
+        return cacheRenderables;
+    }
+
+    public List<Renderable> getAllRenderable(Viewport viewport) {
+        long start, end;
+
+        start = System.nanoTime();
+        getCachedRenderables();
+
+        end = System.nanoTime();
+        System.out.printf("Step 1 - Gather renderables: %.6f seconds%n", (end - start) / 1_000_000_000.0);
+
+        start = System.nanoTime();
+        List<Renderable> result = new ArrayList<>(1000000);
+        for (Renderable renderable : cacheRenderables) {
             if (renderable.isVisible(viewport)) {
                 result.add(renderable);
             }
         }
+        end = System.nanoTime();
+        System.out.printf("Step 2 - Visibility check: %.6f seconds%n", (end - start) / 1_000_000_000.0);
 
+        start = System.nanoTime();
         List<Renderable> sorted = SceneUtil.sortByDistance(result, viewport.getCamera().position);
+        end = System.nanoTime();
+        System.out.printf("Step 3 - Sort by distance: %.6f seconds%n", (end - start) / 1_000_000_000.0);
 
+        start = System.nanoTime();
         if (Settings.useDepthBuffer) {
-            sorted = engine.render.util.DepthBuffer.cull(sorted, viewport);
+            sorted = DepthBuffer.cull(sorted, viewport);
         }
+        end = System.nanoTime();
+        System.out.printf("Step 4 - Depth buffer culling: %.6f seconds%n", (end - start) / 1_000_000_000.0);
 
+        start = System.nanoTime();
         Settings.enginePolygons = sorted.size();
+        end = System.nanoTime();
+        System.out.printf("Step 5 - Store polygon count: %.6f seconds%n", (end - start) / 1_000_000_000.0);
 
         return sorted;
     }
+
 
 }
