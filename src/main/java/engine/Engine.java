@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 public class Engine implements Runnable {
+    @Getter
     private Renderer renderer;
 
     @Getter

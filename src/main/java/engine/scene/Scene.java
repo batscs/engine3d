@@ -80,7 +80,7 @@ public class Scene {
         getCachedRenderables();
 
         end = System.nanoTime();
-        System.out.printf("Step 1 - Gather renderables: %.6f seconds%n", (end - start) / 1_000_000_000.0);
+        //System.out.printf("Step 1 - Gather renderables: %.6f seconds%n", (end - start) / 1_000_000_000.0);
 
         start = System.nanoTime();
         List<Renderable> result = new ArrayList<>(1000000);
@@ -90,24 +90,24 @@ public class Scene {
             }
         }
         end = System.nanoTime();
-        System.out.printf("Step 2 - Visibility check: %.6f seconds%n", (end - start) / 1_000_000_000.0);
+        //System.out.printf("Step 2 - Visibility check: %.6f seconds%n", (end - start) / 1_000_000_000.0);
 
         start = System.nanoTime();
         List<Renderable> sorted = SceneUtil.sortByDistance(result, viewport.getCamera().position);
         end = System.nanoTime();
-        System.out.printf("Step 3 - Sort by distance: %.6f seconds%n", (end - start) / 1_000_000_000.0);
+        //System.out.printf("Step 3 - Sort by distance: %.6f seconds%n", (end - start) / 1_000_000_000.0);
 
         start = System.nanoTime();
         if (Settings.useDepthBuffer) {
             sorted = DepthBuffer.cull(sorted, viewport);
         }
         end = System.nanoTime();
-        System.out.printf("Step 4 - Depth buffer culling: %.6f seconds%n", (end - start) / 1_000_000_000.0);
+        //System.out.printf("Step 4 - Depth buffer culling: %.6f seconds%n", (end - start) / 1_000_000_000.0);
 
         start = System.nanoTime();
         Settings.enginePolygons = sorted.size();
         end = System.nanoTime();
-        System.out.printf("Step 5 - Store polygon count: %.6f seconds%n", (end - start) / 1_000_000_000.0);
+        //System.out.printf("Step 5 - Store polygon count: %.6f seconds%n", (end - start) / 1_000_000_000.0);
 
         return sorted;
     }

@@ -83,7 +83,7 @@ public class Renderer extends Canvas {
             obj.draw(viewport);
         }
         long end = System.nanoTime();
-        System.out.printf("Step 6 - Draw polygons: %.6f seconds%n", (end - start) / 1_000_000_000.0);
+        //System.out.printf("Step 6 - Draw polygons: %.6f seconds%n", (end - start) / 1_000_000_000.0);
 
 
         // Draw Heads-Up Display.

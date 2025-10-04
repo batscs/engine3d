@@ -2,11 +2,12 @@ package app.screen;
 
 import engine.Engine;
 import engine.assets.template.TestScene;
-import engine.controller.CameraController;
+import engine.controller.pov.KeyboardController;
+import engine.controller.pov.MouseController;
+import engine.render.Renderer;
 import lombok.Getter;
 
 import javax.swing.JFrame;
-import java.awt.event.ActionListener;
 
 @Getter
 public class EngineScreen implements Screen {
@@ -21,7 +22,14 @@ public class EngineScreen implements Screen {
     public void start(JFrame frame) {
         engine.start(frame);
 
-        engine.registerController(new CameraController(engine.getCamera()));
+        // TODO eventuell das gaze in engine.start() ??
+        Renderer renderer = engine.getRenderer();
+        MouseController mouseController = new MouseController(renderer, engine.getCamera());
+        mouseController.setMouseCaptured(true);
+        KeyboardController keyboardController = new KeyboardController(engine.getCamera());
+
+        engine.registerController(keyboardController);
+        engine.registerController(mouseController);
         TestScene.build(engine);
     }
 

@@ -1,5 +1,6 @@
-package engine.controller;
+package engine.controller.misc;
 
+import engine.controller.Controller;
 import engine.scene.objects.SceneObject;
 import util.MathUtility;
 

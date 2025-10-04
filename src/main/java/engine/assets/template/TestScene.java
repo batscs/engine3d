@@ -1,7 +1,7 @@
 package engine.assets.template;
 
 import engine.Engine;
-import engine.controller.ObjectController;
+import engine.controller.misc.ObjectController;
 import engine.scene.Scene;
 import engine.scene.objects.SceneObject;
 import engine.scene.objects.composite.SceneCube;
