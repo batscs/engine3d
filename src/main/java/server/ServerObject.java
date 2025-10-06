@@ -1,6 +1,7 @@
 package server;
 
 import engine.render.Camera;
+import engine.scene.objects.BoundingBox;
 import engine.scene.objects.Renderable;
 import engine.scene.objects.SceneObject;
 import engine.scene.objects.composite.SceneCube;
@@ -32,6 +33,11 @@ public class ServerObject implements SceneObject {
     public Vector3 getPosition() {
         // For testing, you may wish to return a dynamically updated position.
         return new Vector3(0, 0, 0);
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        return null;
     }
 
     @Override
@@ -87,6 +93,11 @@ public class ServerObject implements SceneObject {
 
     @Override
     public void setRotation(Vector3 rotation) {
+
+    }
+
+    @Override
+    public void interact() {
 
     }
 }

@@ -2,6 +2,7 @@ package engine.scene.objects.mesh;
 
 import engine.Settings;
 import engine.render.Camera;
+import engine.scene.objects.BoundingBox;
 import engine.scene.objects.Renderable;
 import engine.scene.objects.light.SceneLight;
 import engine.scene.objects.SceneObject;
@@ -94,6 +95,11 @@ public class SceneTriangle implements SceneObject, Renderable {
     public void setRotation(Vector3 rotationDeg) {
         this.rotation = rotationDeg;
         rebuild();
+    }
+
+    @Override
+    public void interact() {
+
     }
 
     private Vector3 rotatePoint(Vector3 pivot, Matrix4 rotation, Vector3 point) {
@@ -206,5 +212,21 @@ public class SceneTriangle implements SceneObject, Renderable {
 
     private int clamp(int val) {
         return Math.min(255, Math.max(0, val));
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        float minX = Math.min(tri.v0.x, Math.min(tri.v1.x, tri.v2.x));
+        float minY = Math.min(tri.v0.y, Math.min(tri.v1.y, tri.v2.y));
+        float minZ = Math.min(tri.v0.z, Math.min(tri.v1.z, tri.v2.z));
+
+        float maxX = Math.max(tri.v0.x, Math.max(tri.v1.x, tri.v2.x));
+        float maxY = Math.max(tri.v0.y, Math.max(tri.v1.y, tri.v2.y));
+        float maxZ = Math.max(tri.v0.z, Math.max(tri.v1.z, tri.v2.z));
+
+        return new BoundingBox(
+                new Vector3(minX, minY, minZ),
+                new Vector3(maxX, maxY, maxZ)
+        );
     }
 }

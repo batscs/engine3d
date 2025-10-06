@@ -23,13 +23,6 @@ public class EngineScreen implements Screen {
         engine.start(frame);
 
         // TODO eventuell das gaze in engine.start() ??
-        Renderer renderer = engine.getRenderer();
-        MouseController mouseController = new MouseController(renderer, engine.getCamera());
-        mouseController.setMouseCaptured(true);
-        KeyboardController keyboardController = new KeyboardController(engine.getCamera());
-
-        engine.registerController(keyboardController);
-        engine.registerController(mouseController);
         TestScene.build(engine);
     }
 

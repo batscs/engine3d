@@ -112,11 +112,12 @@ public class Renderer extends Canvas {
         g2d.drawString("Backfacing (B): " + Settings.allowBackFacing, 10, 65);
         g2d.drawString("DynamicLighting (C): " + Settings.useDynamicLighting, 10, 80);
         g2d.drawString("DepthBuffering (V): " + Settings.useDepthBuffer, 10, 95);
+        g2d.drawString("Interaction : " + Settings.interactedName, 10, 110);
 
         // Draw crosshair.
         int crosshairSize = 10;
         int centerX = width / 2;
-        int centerY = height / 2;
+        int centerY = height / 2 + 20;
 
         g2d.setStroke(new BasicStroke(2));
         g2d.setColor(Color.LIGHT_GRAY);

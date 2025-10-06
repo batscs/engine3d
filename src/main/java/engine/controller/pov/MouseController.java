@@ -5,8 +5,13 @@ import engine.controller.Controller;
 import engine.render.Camera;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class MouseController extends Controller {
     private volatile float deltaX, deltaY;
@@ -22,6 +27,8 @@ public class MouseController extends Controller {
     private int lastMouseX, lastMouseY;
 
     private final Camera camera;
+
+    private final List<Consumer<MouseEvent>> clickListeners = new ArrayList<>();
 
     public MouseController(Component targetComponent, Camera camera) {
         this.targetComponent = targetComponent;
@@ -39,7 +46,22 @@ public class MouseController extends Controller {
             System.err.println("Robot initialization failed: " + e.getMessage());
         }
 
+        targetComponent.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (mouseCaptured) {
+                    for (Consumer<MouseEvent> listener : clickListeners) {
+                        listener.accept(e);
+                    }
+                }
+            }
+        });
+
         calculateCenter();
+    }
+
+    public void addClickListener(Consumer<MouseEvent> listener) {
+        clickListeners.add(listener);
     }
 
     @Override

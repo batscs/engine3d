@@ -1,6 +1,7 @@
 package engine.scene.objects.composite;
 
 import engine.render.Viewport;
+import engine.scene.objects.BoundingBox;
 import engine.scene.objects.Renderable;
 import engine.scene.objects.SceneObject;
 import engine.scene.objects.mesh.SceneTriangle;
@@ -40,6 +41,35 @@ public class Composite implements SceneObject {
     }
 
     @Override
+    public BoundingBox getBoundingBox() {
+        BoundingBox result = null;
+
+        for (SceneObject child : meshes) {
+            BoundingBox childBox = child.getBoundingBox();
+            if (childBox == null) continue; // skip if child has no box
+
+            if (result == null) {
+                result = new BoundingBox(childBox.getMin(), childBox.getMax());
+            } else {
+                // expand result to include child's box
+                result.setMin(new Vector3(
+                        Math.min(result.getMin().x, childBox.getMin().x),
+                        Math.min(result.getMin().y, childBox.getMin().y),
+                        Math.min(result.getMin().z, childBox.getMin().z)
+                ));
+                result.setMax(new Vector3(
+                        Math.max(result.getMax().x, childBox.getMax().x),
+                        Math.max(result.getMax().y, childBox.getMax().y),
+                        Math.max(result.getMax().z, childBox.getMax().z)
+                ));
+            }
+        }
+
+        return result; // could be null if no children have bounding boxes
+    }
+
+
+    @Override
     public List<Renderable> getRenderables() {
         return meshes.stream().flatMap(mesh -> mesh.getRenderables().stream()).toList();
     }
@@ -64,6 +94,11 @@ public class Composite implements SceneObject {
     public void setRotation(Vector3 newRotation) {
         this.rotation = newRotation;
         updateChildren();
+    }
+
+    @Override
+    public void interact() {
+
     }
 
     private void updateChildren() {

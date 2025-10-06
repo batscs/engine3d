@@ -11,6 +11,8 @@ public interface SceneObject {
 
     Vector3 getPosition();
 
+    BoundingBox getBoundingBox();
+
     List<Renderable> getRenderables();
 
     void move(Vector3 adjustment);
@@ -18,6 +20,8 @@ public interface SceneObject {
     void setPosition(Vector3 pos);
 
     Vector3 getRotation();
+
     void setRotation(Vector3 rotation);
 
+    void interact();
 }

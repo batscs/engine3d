@@ -1,6 +1,7 @@
 package engine.scene.objects.light;
 
 import engine.Settings;
+import engine.scene.objects.BoundingBox;
 import engine.scene.objects.Renderable;
 import engine.scene.objects.SceneObject;
 import lombok.Getter;
@@ -35,6 +36,9 @@ public class SceneLight implements SceneObject, Renderable {
         int y = (int) ((1 - (lightProj.y + 1) * 0.5f) * viewport.getHeight());
 
         Vector3 lightView = viewport.getCamera().getViewMatrix().transform(position);
+        if (lightView.z < -0.1f) return;
+
+
         float distance = lightView.length();
         int size = Math.max(2, Math.min((int) (100f / distance), 20));
 
@@ -80,5 +84,18 @@ public class SceneLight implements SceneObject, Renderable {
     @Override
     public void setRotation(Vector3 rotation) {
 
+    }
+
+    @Override
+    public void interact() {
+
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        float r = 0.2f; // small radius around light position
+        Vector3 min = new Vector3(position.x - r, position.y - r, position.z - r);
+        Vector3 max = new Vector3(position.x + r, position.y + r, position.z + r);
+        return new BoundingBox(min, max);
     }
 }
