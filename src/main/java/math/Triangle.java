@@ -1,6 +1,7 @@
 package math;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Triangle {
@@ -60,6 +61,43 @@ public class Triangle {
 
         return triangles;
     }
+
+    public static List<Triangle> makeBox(float x, float y, float z, float w, float h, float d) {
+        float hw = w / 2f, hh = h / 2f, hd = d / 2f;
+
+        Vector3[] verts = new Vector3[] {
+                new Vector3(x - hw, y - hh, z - hd), // 0: bottom-left-back
+                new Vector3(x - hw, y + hh, z - hd), // 1: top-left-back
+                new Vector3(x + hw, y + hh, z - hd), // 2: top-right-back
+                new Vector3(x + hw, y - hh, z - hd), // 3: bottom-right-back
+                new Vector3(x - hw, y - hh, z + hd), // 4: bottom-left-front
+                new Vector3(x - hw, y + hh, z + hd), // 5: top-left-front
+                new Vector3(x + hw, y + hh, z + hd), // 6: top-right-front
+                new Vector3(x + hw, y - hh, z + hd), // 7: bottom-right-front
+        };
+
+        int[][] faces = {
+                // front face (facing negative Z)
+                {0,1,2}, {0,2,3},
+                // right face (facing positive X)
+                {3,2,6}, {3,6,7},
+                // back face (facing positive Z)
+                {7,6,5}, {7,5,4},
+                // left face (facing negative X)
+                {4,5,1}, {4,1,0},
+                // top face (facing positive Y) - FIXED
+                {1,5,6}, {1,6,2},
+                // bottom face (facing negative Y) - FIXED
+                {4,0,3}, {4,3,7}
+        };
+
+        List<Triangle> tris = new ArrayList<>();
+        for (int[] f : faces) {
+            tris.add(new Triangle(verts[f[0]], verts[f[1]], verts[f[2]]));
+        }
+        return tris;
+    }
+
 
     public Triangle add(Vector3 adjustment) {
         return new Triangle(

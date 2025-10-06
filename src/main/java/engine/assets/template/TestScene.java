@@ -8,7 +8,10 @@ import engine.scene.objects.composite.SceneCube;
 import engine.scene.objects.light.SceneLight;
 import engine.scene.objects.light.SceneLightBulb;
 import engine.scene.objects.light.SceneLightFade;
+import engine.scene.objects.robots.StanfordArm;
 import math.Vector3;
+
+import java.awt.Color;
 
 public class TestScene {
 
@@ -17,6 +20,10 @@ public class TestScene {
         scene.add(new SceneLight(new Vector3(-2, 3, 3), java.awt.Color.RED, 2f));
         scene.add(new SceneLightBulb(new Vector3(2, 0, 3), java.awt.Color.BLUE, 1.2f));
         scene.add(new SceneLightFade(new Vector3(-2, -2, 7), java.awt.Color.GREEN, 1f));
+
+        scene.add(new SceneLight(new Vector3(-3f, 1, -4f), Color.GREEN, 2f));
+        StanfordArm arm = new StanfordArm(new Vector3(-2, 0, -3));
+        scene.addAll(arm.getParts());
 
         SceneObject cube = new SceneCube(0, 0, 5, 2);
         scene.add(cube);

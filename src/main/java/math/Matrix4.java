@@ -1,7 +1,7 @@
 package math;
 
 public class Matrix4 {
-    float[][] m = new float[4][4];
+    public float[][] m = new float[4][4];
 
     public Matrix4(float[] values) {
         if (values.length != 16) {
