@@ -13,16 +13,31 @@ import java.util.List;
  */
 public class SceneRectangle extends Composite implements SceneObject {
 
-    public SceneRectangle(float x, float y, float z, float width, float height, float depth, Color baseColor) {
-        super(makeRectangle(x, y, z, width, height, depth, baseColor));
-    }
-
     public SceneRectangle(float x, float y, float z, float width, float height, float depth) {
-        super(makeRectangle(x, y, z, width, height, depth, null));
+        this(x, y, z, width, height, depth, 2);
     }
 
-    private static List<SceneTriangle> makeRectangle(float x, float y, float z, float w, float h, float d, Color baseColor) {
-        List<SceneTriangle> result = Triangle.makeBox(x, y, z, w, h, d)
+    // new constructor – lets you specify how fine the mesh is
+    public SceneRectangle(float x, float y, float z,
+                          float width, float height, float depth,
+                          int segmentsPerEdge) {
+        super(makeRectangle(x, y, z, width, height, depth, null, segmentsPerEdge));
+    }
+
+    // old helper kept for compatibility – delegates to the new one
+    private static List<SceneTriangle> makeRectangle(float x, float y, float z,
+                                                     float w, float h, float d,
+                                                     Color baseColor) {
+        return makeRectangle(x, y, z, w, h, d, baseColor, 1); // 1 = no subdivision
+    }
+
+    // new helper with subdivision parameter
+    private static List<SceneTriangle> makeRectangle(float x, float y, float z,
+                                                     float w, float h, float d,
+                                                     Color baseColor,
+                                                     int segmentsPerEdge) {
+        List<SceneTriangle> result = Triangle
+                .makeBox(x, y, z, w, h, d, segmentsPerEdge)
                 .stream()
                 .map(SceneTriangle::new)
                 .toList();
