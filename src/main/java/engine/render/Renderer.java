@@ -1,6 +1,9 @@
 package engine.render;
 
 import engine.Settings;
+import engine.render.strategy.DepthBuffer;
+import engine.render.strategy.Painter;
+import engine.render.strategy.RenderStrategy;
 import engine.scene.Scene;
 import engine.scene.objects.Renderable;
 import lombok.Getter;
@@ -58,6 +61,9 @@ public class Renderer extends Canvas {
         camera.pitch = pitch;
     }
 
+    private final RenderStrategy painterStrategy = new Painter();
+    private final RenderStrategy depthStrategy   = new DepthBuffer();
+
     public void render() {
         // If size has changed, recreate frame.
         if (frame.getWidth() != width || frame.getHeight() != height) {
@@ -75,18 +81,13 @@ public class Renderer extends Canvas {
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, width, height);
 
-        // Draw all scene objects (sorted by distance if needed).
-        //for (Renderable obj : scene.getAllRenderablesByDistance(camera.position)) {
-        List<Renderable> renderables = scene.getAllRenderable(viewport);
-        long start = System.nanoTime();
-        for (Renderable obj : renderables) {
-            obj.draw(viewport);
+        if (Settings.useDepthBuffer) {
+            // Neuer: echte Z-Buffer-Render-Pipeline
+            depthStrategy.render(scene, viewport, frame);
+        } else {
+            painterStrategy.render(scene, viewport, frame);
         }
-        long end = System.nanoTime();
-        //System.out.printf("Step 6 - Draw polygons: %.6f seconds%n", (end - start) / 1_000_000_000.0);
 
-
-        // Draw Heads-Up Display.
         if (Settings.drawHud) {
             drawHud(g2d);
         }

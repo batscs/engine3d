@@ -111,7 +111,7 @@ public class SceneTriangle implements SceneObject, Renderable {
         return rotated.add(pivot);
     }
 
-    private Color computeLitColor(Viewport viewport) {
+    public Color computeLitColor(Viewport viewport) {
         if (!Settings.useDynamicLighting) {
             Vector3 camPos = viewport.getCamera().position;
             Vector3 viewDir = tri.center().sub(camPos).normalize();
