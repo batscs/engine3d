@@ -1,10 +1,11 @@
 package server;
 
+import engine.Engine;
+import engine.InteractionType;
 import engine.render.Camera;
 import engine.scene.objects.BoundingBox;
 import engine.scene.objects.Renderable;
 import engine.scene.objects.SceneObject;
-import engine.scene.objects.composite.SceneCube;
 import engine.scene.objects.composite.ScenePlayer;
 import math.Vector3;
 
@@ -97,7 +98,7 @@ public class ServerObject implements SceneObject {
     }
 
     @Override
-    public void interact() {
+    public void interact(InteractionType type) {
 
     }
 }

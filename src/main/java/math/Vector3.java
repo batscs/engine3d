@@ -37,6 +37,10 @@ public class Vector3 {
         return new Vector3(x + o.x, y + o.y, z + o.z);
     }
 
+    public Vector3 add(float v, float v1, float v2) {
+        return this.add(new Vector3(v, v1, v2));
+    }
+
     public Vector3 sub(Vector3 o) {
         return new Vector3(x - o.x, y - o.y, z - o.z);
     }
@@ -65,4 +69,6 @@ public class Vector3 {
     public Vector3 copy() {
         return new Vector3(x, y, z);
     }
+
+
 }

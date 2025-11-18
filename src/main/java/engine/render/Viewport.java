@@ -35,6 +35,9 @@ public class Viewport {
     }
 
     public boolean isBackFacing(Triangle tri) {
-        return tri.angle(camera.position) >= 0;
+        math.Vector3 n = tri.normal().normalize();
+        math.Vector3 toCam = camera.position.sub(tri.center()).normalize();
+        // backfacing = Normal zeigt von der Kamera weg
+        return n.dot(toCam) < 0f;  // oder > 0f, je nach Normalen-Orientierung – einmal testen
     }
 }

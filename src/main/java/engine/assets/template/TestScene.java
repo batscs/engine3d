@@ -8,6 +8,7 @@ import engine.scene.objects.composite.SceneCube;
 import engine.scene.objects.light.SceneLight;
 import engine.scene.objects.light.SceneLightBulb;
 import engine.scene.objects.light.SceneLightFade;
+import engine.scene.objects.robots.SentryTurret;
 import engine.scene.objects.robots.StanfordArm;
 import math.Vector3;
 
@@ -23,7 +24,11 @@ public class TestScene {
 
         scene.add(new SceneLight(new Vector3(-3f, 1, -4f), Color.GREEN, 2f));
         StanfordArm arm = new StanfordArm(new Vector3(-2, 0, -3));
-        scene.addAll(arm.getParts());
+        // scene.addAll(arm.getParts());
+
+        SentryTurret turret = new SentryTurret(new Vector3(-2f, 0f, -3f));
+        scene.addAll(turret.getParts());
+
 
         SceneObject cube = new SceneCube(0, 0, 5, 2);
         scene.add(cube);

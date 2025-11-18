@@ -109,11 +109,15 @@ public class Engine implements Runnable {
 
     private void onMouseClick(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
-            handleSceneClick();
+            handleSceneClick(InteractionType.PRIMARY);
+        }
+
+        if (e.getButton() == MouseEvent.BUTTON3) {
+            handleSceneClick(InteractionType.SECONDARY);
         }
     }
 
-    private void handleSceneClick() {
+    private void handleSceneClick(InteractionType type) {
         Camera camera = getCamera();
         Scene scene = getScene();
 
@@ -123,7 +127,7 @@ public class Engine implements Runnable {
         SceneObject hit = raycastScene(scene, camera, 100f);
         if (hit != null) {
             Settings.interactedName = hit.toString();
-            hit.interact();
+            hit.interact(type);
         } else {
             Settings.interactedName = "null";
         }

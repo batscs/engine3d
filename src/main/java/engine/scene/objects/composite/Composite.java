@@ -1,13 +1,11 @@
 package engine.scene.objects.composite;
 
-import engine.render.Viewport;
+import engine.InteractionType;
 import engine.scene.objects.BoundingBox;
 import engine.scene.objects.Renderable;
 import engine.scene.objects.SceneObject;
-import engine.scene.objects.mesh.SceneTriangle;
 import math.Matrix4;
 import math.Vector3;
-import util.SceneUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,7 +95,7 @@ public class Composite implements SceneObject {
     }
 
     @Override
-    public void interact() {
+    public void interact(InteractionType type) {
 
     }
 
@@ -127,11 +125,34 @@ public class Composite implements SceneObject {
 
 
     private Vector3 calculateAveragePosition() {
-        Vector3 sum = new Vector3(0, 0, 0);
+        // Alte Logik (Durchschnitt von Dreieckscentern) führt zu Versatz.
+        // Nutze stattdessen die BoundingBox über alle Kinder.
+        float minX = Float.POSITIVE_INFINITY, minY = Float.POSITIVE_INFINITY, minZ = Float.POSITIVE_INFINITY;
+        float maxX = Float.NEGATIVE_INFINITY, maxY = Float.NEGATIVE_INFINITY, maxZ = Float.NEGATIVE_INFINITY;
+
         for (SceneObject mesh : meshes) {
-            sum = sum.add(mesh.getPosition());
+            BoundingBox bb = mesh.getBoundingBox();
+            if (bb == null) continue;
+            minX = Math.min(minX, bb.getMin().x);
+            minY = Math.min(minY, bb.getMin().y);
+            minZ = Math.min(minZ, bb.getMin().z);
+            maxX = Math.max(maxX, bb.getMax().x);
+            maxY = Math.max(maxY, bb.getMax().y);
+            maxZ = Math.max(maxZ, bb.getMax().z);
         }
-        return sum.div(meshes.size());
+
+        if (Float.isInfinite(minX)) {
+            // Fallback: falls irgendwas schiefgeht, nimm 0,0,0
+            return new Vector3(0,0,0);
+        }
+
+        return new Vector3(
+                (minX + maxX) * 0.5f,
+                (minY + maxY) * 0.5f,
+                (minZ + maxZ) * 0.5f
+        );
     }
+
+
 
 }

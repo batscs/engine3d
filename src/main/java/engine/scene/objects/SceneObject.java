@@ -1,6 +1,7 @@
 package engine.scene.objects;
 
-import engine.render.Viewport;
+import engine.Engine;
+import engine.InteractionType;
 import math.Vector3;
 
 import java.util.List;
@@ -23,5 +24,5 @@ public interface SceneObject {
 
     void setRotation(Vector3 rotation);
 
-    void interact();
+    void interact(InteractionType type);
 }

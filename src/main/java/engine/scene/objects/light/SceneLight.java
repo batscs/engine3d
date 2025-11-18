@@ -1,5 +1,7 @@
 package engine.scene.objects.light;
 
+import engine.Engine;
+import engine.InteractionType;
 import engine.Settings;
 import engine.scene.objects.BoundingBox;
 import engine.scene.objects.Renderable;
@@ -10,7 +12,6 @@ import engine.render.Viewport;
 
 import java.awt.*;
 import java.util.List;
-import java.util.Set;
 
 public class SceneLight implements SceneObject, Renderable {
 
@@ -87,7 +88,7 @@ public class SceneLight implements SceneObject, Renderable {
     }
 
     @Override
-    public void interact() {
+    public void interact(InteractionType type) {
 
     }
 

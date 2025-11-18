@@ -1,5 +1,7 @@
 package engine.scene.objects.robots;
 
+import engine.Engine;
+import engine.InteractionType;
 import engine.scene.objects.BoundingBox;
 import engine.scene.objects.Renderable;
 import engine.scene.objects.SceneObject;
@@ -178,5 +180,5 @@ public class Joint implements SceneObject {
     }
 
     @Override
-    public void interact() { /* no-op */ }
+    public void interact(InteractionType type) { /* no-op */ }
 }

@@ -1,5 +1,7 @@
 package engine.scene.objects.mesh;
 
+import engine.Engine;
+import engine.InteractionType;
 import engine.Settings;
 import engine.render.Camera;
 import engine.scene.objects.BoundingBox;
@@ -31,6 +33,7 @@ public class SceneTriangle implements SceneObject, Renderable {
 
     public SceneTriangle(Triangle tri, Color baseColor) {
         this.baseColor    = new Color(200,200,200);
+        this.baseColor    = (baseColor != null) ? baseColor : new Color(200,200,200);
         this.originalTri  = tri.copy();    // deep‐copy the input
         this.tri          = tri.copy();    // our “working” copy
         this.position     = this.tri.center();
@@ -98,7 +101,7 @@ public class SceneTriangle implements SceneObject, Renderable {
     }
 
     @Override
-    public void interact() {
+    public void interact(InteractionType type) {
 
     }
 
